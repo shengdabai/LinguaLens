@@ -1,0 +1,13 @@
+{"t":0,"agent":"af64f4e","agent_type":"architect","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"af64f4e","agent_type":"architect","event":"agent_stop","success":true,"duration_ms":113297}
+{"t":0,"agent":"a99429c","agent_type":"architect","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"ac558dc","agent_type":"code-reviewer","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a99429c","agent_type":"architect","event":"agent_stop","success":true,"duration_ms":141418}
+{"t":0,"agent":"ac558dc","agent_type":"code-reviewer","event":"agent_stop","success":true,"duration_ms":154771}
+{"t":0,"agent":"a9993e8","agent_type":"executor","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a9993e8","agent_type":"executor","event":"agent_stop","success":true,"duration_ms":142074}
+{"t":0,"agent":"system","event":"skill_invoked","skill_name":"update-config"}
+{"t":0,"agent":"a51deb8","agent_type":"architect","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a51deb8","agent_type":"architect","event":"agent_stop","success":true,"duration_ms":193154}
+{"t":0,"agent":"a3fceb4","agent_type":"executor","event":"agent_start","parent_mode":"none"}
+{"t":0,"agent":"a3fceb4","agent_type":"executor","event":"agent_stop","success":true,"duration_ms":160897}
