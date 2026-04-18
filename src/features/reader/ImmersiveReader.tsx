@@ -84,6 +84,7 @@ export const ImmersiveReader: React.FC<ImmersiveReaderProps> = ({ onNeedApiKey }
                 key={tIdx}
                 type="button"
                 onClick={() => handleWordClick(token, sentence)}
+                aria-label={`分析词语: ${token}`}
                 className={`cursor-pointer hover:bg-brand-100 hover:text-brand-800 rounded px-0.5 transition-colors inline-block font-chinese text-xl leading-loose border-none bg-transparent ${
                   selectedWord === token ? 'bg-brand-200 text-brand-900' : 'text-slate-800 dark:text-slate-200'
                 }`}
@@ -126,17 +127,18 @@ export const ImmersiveReader: React.FC<ImmersiveReaderProps> = ({ onNeedApiKey }
             <p className="text-xs font-semibold text-slate-500 mb-3">
               Tap any word to analyze
             </p>
-            <div className="text-xl leading-loose text-slate-800 font-chinese" role="region" aria-label="Interactive reading area">{renderInteractiveText()}</div>
+            <div className="text-xl leading-loose text-slate-800 dark:text-slate-200 font-chinese" role="region" aria-label="Interactive reading area">{renderInteractiveText()}</div>
           </div>
         </div>
 
         {/* Analysis panel */}
         {showPanel && (
-          <div className="w-full lg:w-72 bg-white dark:bg-[#1E1E1E] border border-slate-100 dark:border-slate-800 rounded-2xl shadow-sm p-4 space-y-4 h-fit">
+          <div className="w-full lg:w-72 lg:flex-shrink-0 bg-white dark:bg-[#1E1E1E] border border-slate-100 dark:border-slate-800 rounded-2xl shadow-sm p-4 space-y-4 h-fit">
             <div className="flex items-center justify-between">
               <p className="text-xs font-semibold text-slate-500">Analysis</p>
               <button
                 onClick={() => setShowPanel(false)}
+                aria-label="Close analysis panel"
                 className="p-1 hover:bg-slate-100 rounded-full text-slate-400 transition-colors"
               >
                 <X size={14} />

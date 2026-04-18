@@ -54,9 +54,9 @@ const PROVIDERS: ProviderConfig[] = [
 ];
 
 const COLOR_CLASSES: Record<string, { badge: string; ring: string; dot: string; bg: string }> = {
-  blue:   { badge: 'bg-blue-100 text-blue-700',   ring: 'ring-blue-400',   dot: 'bg-blue-500',   bg: 'bg-blue-50' },
-  green:  { badge: 'bg-green-100 text-green-700',  ring: 'ring-green-400',  dot: 'bg-green-500',  bg: 'bg-green-50' },
-  orange: { badge: 'bg-orange-100 text-orange-700',ring: 'ring-orange-400', dot: 'bg-orange-500', bg: 'bg-orange-50' },
+  blue:   { badge: 'bg-blue-100 text-blue-700',   ring: 'ring-blue-400',   dot: 'bg-blue-500',   bg: 'bg-blue-50 dark:bg-blue-900/20' },
+  green:  { badge: 'bg-green-100 text-green-700',  ring: 'ring-green-400',  dot: 'bg-green-500',  bg: 'bg-green-50 dark:bg-green-900/20' },
+  orange: { badge: 'bg-orange-100 text-orange-700',ring: 'ring-orange-400', dot: 'bg-orange-500', bg: 'bg-orange-50 dark:bg-orange-900/20' },
 };
 
 // ─── Key accessors ─────────────────────────────────────────────────────────────
@@ -170,7 +170,9 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ config, settings, onSetting
                 className="w-full bg-slate-50 dark:bg-[#252525] border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm font-mono text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-300 pr-10"
               />
               <button
+                type="button"
                 onClick={() => setShowKey((v) => !v)}
+                aria-label={showKey ? 'Hide API key' : 'Show API key'}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
               >
                 {showKey ? <EyeOff size={13} /> : <Eye size={13} />}
@@ -223,8 +225,8 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ config, settings, onSetting
                 onClick={() => handleModelChange(m.id)}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-xl border text-sm transition-all ${
                   currentModel === m.id
-                    ? 'border-brand-300 bg-brand-50 text-brand-800'
-                    : 'border-slate-100 bg-slate-50 text-slate-600 hover:border-slate-200 hover:bg-white'
+                    ? 'border-brand-300 bg-brand-50 dark:bg-brand-900/20 text-brand-800 dark:text-brand-300'
+                    : 'border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-[#252525] text-slate-600 dark:text-slate-400 hover:border-slate-200 dark:hover:border-slate-700 hover:bg-white dark:hover:bg-[#2a2a2a]'
                 }`}
               >
                 <span className="font-medium">{m.label}</span>
@@ -233,8 +235,8 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ config, settings, onSetting
                     m.badge.includes('⭐')
                       ? 'bg-yellow-100 text-yellow-700'
                       : currentModel === m.id
-                      ? 'bg-brand-100 text-brand-600'
-                      : 'bg-slate-100 text-slate-500'
+                      ? 'bg-brand-100 dark:bg-brand-900/30 text-brand-600 dark:text-brand-400'
+                      : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400'
                   }`}>
                     {m.badge}
                   </span>
@@ -253,7 +255,7 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ config, settings, onSetting
 
         {/* Gemini-specific note */}
         {config.id === 'gemini' && (
-          <div className="flex items-start gap-2 p-3 bg-blue-50 rounded-xl border border-blue-100">
+          <div className="flex items-start gap-2 p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-100 dark:border-blue-900">
             <Info size={13} className="text-blue-500 mt-0.5 shrink-0" />
             <p className="text-xs text-blue-700">
               <strong>Required for:</strong> Live Tutor, Roleplay, TTS (text-to-speech), and Pronunciation Coach — these features only work with Gemini.
@@ -290,7 +292,7 @@ const PrimaryProviderSelector: React.FC<PrimaryProviderProps> = ({ settings, onS
         <p className="text-xs text-slate-500">
           Which AI powers your translations, Snap analysis, Fluency Coach, and other text features?
         </p>
-        <div className="grid grid-cols-3 gap-2">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           {PROVIDERS.map((p) => {
             const hasKey = !!getKey(settings, p.id).trim();
             const isActive = settings.provider === p.id;
@@ -301,8 +303,8 @@ const PrimaryProviderSelector: React.FC<PrimaryProviderProps> = ({ settings, onS
                 onClick={() => handleChange(p.id)}
                 className={`flex flex-col items-center gap-1.5 py-3 px-2 rounded-xl border-2 transition-all ${
                   isActive
-                    ? `border-brand-400 bg-brand-50 ${colors.ring} ring-2`
-                    : 'border-slate-100 bg-slate-50 hover:border-slate-200 hover:bg-white'
+                    ? `border-brand-400 bg-brand-50 dark:bg-brand-900/20 ${colors.ring} ring-2`
+                    : 'border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-[#252525] hover:border-slate-200 dark:hover:border-slate-700 hover:bg-white dark:hover:bg-[#2a2a2a]'
                 }`}
               >
                 <span className="text-xl">{p.logo}</span>
@@ -311,7 +313,7 @@ const PrimaryProviderSelector: React.FC<PrimaryProviderProps> = ({ settings, onS
                 </span>
                 {hasKey
                   ? <span className={`text-xs px-1.5 py-0.5 rounded-full font-bold ${colors.badge}`}>Ready</span>
-                  : <span className="text-xs px-1.5 py-0.5 rounded-full font-bold bg-slate-100 text-slate-400">No key</span>
+                  : <span className="text-xs px-1.5 py-0.5 rounded-full font-bold bg-slate-100 dark:bg-slate-800 text-slate-400 dark:text-slate-500">No key</span>
                 }
               </button>
             );
@@ -365,7 +367,7 @@ export const SettingsPage: React.FC = () => {
         </div>
         <div className="p-5">
           {hasAnyKey ? (
-            <div className="flex items-center gap-3 p-4 bg-brand-50 border border-brand-100 rounded-xl">
+            <div className="flex items-center gap-3 p-4 bg-brand-50 dark:bg-brand-900/20 border border-brand-100 dark:border-brand-900/40 rounded-xl">
               <div className="w-10 h-10 bg-brand-600 rounded-full flex items-center justify-center">
                 <Key size={18} className="text-white" />
               </div>
@@ -377,7 +379,7 @@ export const SettingsPage: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="flex items-center gap-3 p-4 bg-slate-50 border border-slate-200 rounded-xl">
+            <div className="flex items-center gap-3 p-4 bg-slate-50 dark:bg-[#252525] border border-slate-200 dark:border-slate-700 rounded-xl">
               <div className="w-10 h-10 bg-slate-400 rounded-full flex items-center justify-center">
                 <Zap size={18} className="text-white" />
               </div>
@@ -396,7 +398,7 @@ export const SettingsPage: React.FC = () => {
           <Crown size={16} className="text-yellow-500" />
           Subscription Plans
         </h2>
-        <p className="text-sm text-slate-500">No API key? Subscribe to use AI features powered by our platform.</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">No API key? Subscribe to use AI features powered by our platform.</p>
 
         <div className="grid grid-cols-1 gap-3">
           {PLANS.map((plan) => (
@@ -417,7 +419,7 @@ export const SettingsPage: React.FC = () => {
                 <div>
                   <div className="flex items-center gap-2 mb-1">
                     <plan.icon size={16} className={plan.highlighted ? 'text-brand-200' : 'text-brand-600'} />
-                    <h3 className={`font-bold text-sm ${plan.highlighted ? 'text-white' : 'text-slate-900'}`}>
+                    <h3 className={`font-bold text-sm ${plan.highlighted ? 'text-white' : 'text-slate-900 dark:text-slate-100'}`}>
                       {plan.name}
                     </h3>
                   </div>
@@ -426,15 +428,15 @@ export const SettingsPage: React.FC = () => {
                   </p>
                 </div>
                 <div className="text-right">
-                  <p className={`text-2xl font-bold ${plan.highlighted ? 'text-white' : 'text-slate-900'}`}>
+                  <p className={`text-2xl font-bold ${plan.highlighted ? 'text-white' : 'text-slate-900 dark:text-slate-100'}`}>
                     {plan.price}
                   </p>
-                  <p className={`text-xs ${plan.highlighted ? 'text-brand-200' : 'text-slate-400'}`}>{plan.period}</p>
+                  <p className={`text-xs ${plan.highlighted ? 'text-brand-200' : 'text-slate-400 dark:text-slate-500'}`}>{plan.period}</p>
                 </div>
               </div>
               <ul className="space-y-1.5 mb-4">
                 {plan.features.map((f, i) => (
-                  <li key={i} className={`flex items-start gap-2 text-xs ${plan.highlighted ? 'text-brand-100' : 'text-slate-600'}`}>
+                  <li key={i} className={`flex items-start gap-2 text-xs ${plan.highlighted ? 'text-brand-100' : 'text-slate-600 dark:text-slate-400'}`}>
                     <Check size={12} className={`mt-0.5 shrink-0 ${plan.highlighted ? 'text-brand-300' : 'text-green-500'}`} />
                     {f}
                   </li>
@@ -445,7 +447,7 @@ export const SettingsPage: React.FC = () => {
                   plan.highlighted
                     ? 'bg-white text-brand-700 hover:bg-brand-50'
                     : plan.id === 'free'
-                    ? 'bg-slate-100 text-slate-500 cursor-default'
+                    ? 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 cursor-default'
                     : 'bg-brand-600 text-white hover:bg-brand-700'
                 }`}
                 disabled={plan.id === 'free'}

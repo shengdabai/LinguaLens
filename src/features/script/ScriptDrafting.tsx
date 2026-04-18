@@ -13,6 +13,7 @@ export const ScriptDrafting: React.FC<ScriptDraftingProps> = ({ onNeedApiKey }) 
   const [result, setResult] = useState<string | null>(null);
   const [isRefining, setIsRefining] = useState(false);
   const [noApiKey, setNoApiKey] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   if (noApiKey) {
     return <ApiGate onGoToSettings={onNeedApiKey ?? (() => {})} featureName="Script Drafting" />;
@@ -21,6 +22,7 @@ export const ScriptDrafting: React.FC<ScriptDraftingProps> = ({ onNeedApiKey }) 
   const handleRefine = async () => {
     if (!draft.trim()) return;
     setIsRefining(true);
+    setError(null);
     try {
       const refined = await refineScript(draft, context);
       setResult(refined);
@@ -29,6 +31,7 @@ export const ScriptDrafting: React.FC<ScriptDraftingProps> = ({ onNeedApiKey }) 
         setNoApiKey(true);
       } else {
         console.error(e);
+        setError('Something went wrong. Please try again.');
       }
     } finally {
       setIsRefining(false);
@@ -84,10 +87,15 @@ export const ScriptDrafting: React.FC<ScriptDraftingProps> = ({ onNeedApiKey }) 
           </button>
         </div>
 
-        <div className="bg-slate-50 dark:bg-[#252525] border border-slate-100 dark:border-slate-800 rounded-2xl p-5 min-h-[320px] overflow-y-auto">
+        <div className="bg-slate-50 dark:bg-[#252525] border border-slate-100 dark:border-slate-800 rounded-2xl p-5 min-h-[320px] max-h-[500px] overflow-y-auto">
           <h3 className="text-xs font-semibold text-slate-500 mb-3 border-b border-slate-200 dark:border-slate-700 pb-2">
             Refined Chinese Script
           </h3>
+          {error && (
+            <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl px-4 py-2.5 mb-3">
+              {error}
+            </div>
+          )}
           {result ? (
             <div className="text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap text-sm font-chinese">{result}</div>
           ) : (

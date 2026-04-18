@@ -40,7 +40,7 @@ export const Shadowing: React.FC<ShadowingProps> = ({ onNeedApiKey }) => {
     <div className="p-4 md:p-6 max-w-2xl mx-auto space-y-5">
       <div className="text-center">
         <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100 mb-1">Shadowing Practice</h2>
-        <p className="text-sm text-slate-500">Focus on rhythm, tones, and thought groups.</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Focus on rhythm, tones, and thought groups.</p>
       </div>
 
       {/* Topic pills */}
@@ -51,7 +51,7 @@ export const Shadowing: React.FC<ShadowingProps> = ({ onNeedApiKey }) => {
             onClick={() => setTopic(t)}
             className={`px-4 py-1.5 rounded-full text-sm font-medium border transition-all ${
               topic === t
-                ? 'bg-rose-100 border-rose-300 text-rose-800'
+                ? 'bg-rose-100 dark:bg-rose-900/30 border-rose-300 dark:border-rose-700 text-rose-800 dark:text-rose-300'
                 : 'bg-white dark:bg-[#1E1E1E] border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:border-rose-200'
             }`}
           >
@@ -87,9 +87,9 @@ export const Shadowing: React.FC<ShadowingProps> = ({ onNeedApiKey }) => {
       )}
 
       {!content && !loading && (
-        <div className="text-center py-12 text-slate-400">
-          <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-3">
-            <Volume2 size={20} className="text-slate-400" />
+        <div className="text-center py-12 text-slate-400 dark:text-slate-500">
+          <div className="w-12 h-12 bg-slate-100 dark:bg-slate-800 rounded-full flex items-center justify-center mx-auto mb-3">
+            <Volume2 size={20} className="text-slate-400 dark:text-slate-500" />
           </div>
           <p className="text-sm">Select a topic and generate material to start shadowing.</p>
         </div>

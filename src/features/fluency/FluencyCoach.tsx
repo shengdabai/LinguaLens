@@ -20,9 +20,10 @@ export const FluencyCoach: React.FC<FluencyCoachProps> = ({ onPracticeComplete, 
   const [loadingMaterial, setLoadingMaterial] = useState(false);
   const [evaluating, setEvaluating] = useState(false);
   const [noApiKey, setNoApiKey] = useState(false);
+  const [evalError, setEvalError] = useState<string | null>(null);
 
   useEffect(() => {
-    handleGenerateNew();
+    if (!noApiKey) handleGenerateNew();
   }, []);
 
   if (noApiKey) {
@@ -49,6 +50,7 @@ export const FluencyCoach: React.FC<FluencyCoachProps> = ({ onPracticeComplete, 
   const handleEvaluation = async (audioBlob: Blob) => {
     if (!material) return;
     setEvaluating(true);
+    setEvalError(null);
     try {
       const result = await evaluatePronunciation(material.chinese, audioBlob);
       setFeedback(result);
@@ -58,6 +60,7 @@ export const FluencyCoach: React.FC<FluencyCoachProps> = ({ onPracticeComplete, 
         setNoApiKey(true);
       } else {
         console.error(err);
+        setEvalError('Evaluation failed. Please try again.');
       }
     } finally {
       setEvaluating(false);
@@ -115,6 +118,11 @@ export const FluencyCoach: React.FC<FluencyCoachProps> = ({ onPracticeComplete, 
       {!loadingMaterial && material && (
         <>
           <AudioRecorder onRecordingComplete={handleEvaluation} isEvaluating={evaluating} />
+          {evalError && (
+            <div className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl px-4 py-2.5">
+              {evalError}
+            </div>
+          )}
           {feedback && <ScoreCard result={feedback} />}
         </>
       )}
