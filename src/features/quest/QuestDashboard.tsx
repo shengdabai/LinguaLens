@@ -16,21 +16,21 @@ export const QuestDashboard: React.FC<QuestDashboardProps> = ({ quests, xp, leve
   return (
     <div className="space-y-4 px-4 py-4 max-w-2xl mx-auto">
       {/* Level & XP card */}
-      <div className="bg-gradient-to-br from-brand-600 to-brand-700 rounded-2xl p-5 text-white shadow-lg shadow-brand-500/20">
-        <div className="flex items-center justify-between mb-3">
-          <div>
+      <div className="bg-gradient-to-br from-brand-600 to-brand-700 rounded-2xl p-5 text-white shadow-lg shadow-brand-500/20 overflow-hidden">
+        <div className="flex items-center justify-between mb-3 gap-3">
+          <div className="min-w-0">
             <p className="text-brand-200 text-xs font-semibold tracking-wide mb-0.5">Current Level</p>
             <div className="flex items-baseline gap-2">
               <span className="text-4xl font-bold">{level}</span>
               <span className="text-brand-300 text-sm">/ ∞</span>
             </div>
           </div>
-          <div className="w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
+          <div className="flex-shrink-0 w-16 h-16 rounded-2xl bg-white/20 flex items-center justify-center">
             <Star size={32} className="text-yellow-300" fill="currentColor" />
           </div>
         </div>
         <div className="space-y-1">
-          <div className="flex justify-between text-xs text-brand-200">
+          <div className="flex justify-between text-xs text-brand-200 gap-1">
             <span>{xpInCurrentLevel} XP</span>
             <span>{xpToNextLevel} XP to next level</span>
           </div>
@@ -92,9 +92,9 @@ export const QuestDashboard: React.FC<QuestDashboardProps> = ({ quests, xp, leve
                   </div>
                 )}
               </div>
-              <div className="flex-shrink-0 ml-3">
+              <div className="flex-shrink-0 ml-2">
                 <span
-                  className={`text-xs font-bold px-2 py-0.5 rounded-full ${
+                  className={`text-xs font-bold px-2 py-0.5 rounded-full whitespace-nowrap ${
                     quest.completed
                       ? 'bg-green-100 text-green-600'
                       : 'bg-yellow-50 text-yellow-600 border border-yellow-100'

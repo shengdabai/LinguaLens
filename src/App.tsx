@@ -206,7 +206,7 @@ export const App: React.FC = () => {
 
   return (
     <Layout>
-      <div className="flex">
+      <div className="flex w-full overflow-x-hidden">
         <Navigation
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -218,7 +218,7 @@ export const App: React.FC = () => {
           level={profile.level}
         />
 
-        <main id="main-content" className="flex-1 md:ml-64 min-h-screen">
+        <main id="main-content" className="flex-1 min-w-0 md:ml-64 min-h-screen">
           <div className={`md:hidden ${activeTab === 'practice' || activeTab === 'learn' ? 'pt-12' : 'pt-0'}`} />
           <div className="pb-20 md:pb-0">
             <Suspense fallback={<LazyFallback />}>{renderContent()}</Suspense>
