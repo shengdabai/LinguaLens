@@ -20,4 +20,5 @@ Append-only. Each entry: date / step / what changed / why.
 
 | Date | Module / Step | Symptom | Resolution |
 |---|---|---|---|
-| 2026-05-08 | Pre-flight env | `xcode-select` pointing to CommandLineTools, `xcodebuild` unavailable, `pod` not installed | Installed CocoaPods 1.16.2 via Homebrew; user to switch xcode-select to /Applications/Xcode.app via switch script |
+| 2026-05-08 | Pre-flight env | `xcode-select` pointing to CommandLineTools, `xcodebuild` unavailable, `pod` not installed | Installed CocoaPods 1.16.2 via Homebrew; user to switch xcode-select to /Applications/Xcode.app via `scripts/fix-xcode-select.sh` |
+| 2026-05-08 | A5.3 npm run build | Failed with `dlopen: library load disallowed by system policy` on `@rollup/rollup-darwin-arm64/rollup.darwin-arm64.node` | macOS Gatekeeper quarantined node_modules (project dir was likely synced/copied). Fix: `xattr -dr com.apple.quarantine node_modules`. Re-ran build, succeeded. |
