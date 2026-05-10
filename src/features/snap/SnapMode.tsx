@@ -5,7 +5,7 @@ import { analyzeImage } from '../../services/geminiService';
 import { ToneVisualizer } from '../../components/ToneVisualizer';
 import { Button } from '../../components/ui/Button';
 import { playBrowserTTS } from '../../utils/audio';
-import { captureNativeCamera, isNativeCamera } from '../../services/camera';
+import { captureNativeCamera, pickFromGallery, isNativeCamera } from '../../services/camera';
 
 interface SnapModeProps {
   onSnapComplete?: (detectedObject: string) => void;
@@ -32,6 +32,12 @@ export const SnapMode: React.FC<SnapModeProps> = ({ onSnapComplete, onAddVocab, 
   }, []);
 
   const startCamera = async () => {
+    // On native iOS, Capacitor Camera plugin handles camera access — skip web getUserMedia
+    // (which can fail in WKWebView and always fails in iOS Simulator).
+    if (isNativeCamera) {
+      setError('Tap the camera icon below to take a photo, or pick one from your library.');
+      return;
+    }
     try {
       const ms = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
@@ -255,15 +261,35 @@ export const SnapMode: React.FC<SnapModeProps> = ({ onSnapComplete, onAddVocab, 
         )}
 
         {error && !imagePreview && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6">
-            <Camera size={48} className="text-slate-600 mb-4" />
-            <p className="text-slate-400 mb-4 text-sm">{error}</p>
-            <button
-              onClick={() => fileInputRef.current?.click()}
-              className="px-4 py-2 bg-white text-slate-900 rounded-xl font-medium text-sm flex items-center gap-2 hover:bg-slate-100 transition-colors"
-            >
-              <Upload size={16} /> Upload Image
-            </button>
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 gap-3">
+            <Camera size={48} className="text-slate-600 mb-1" />
+            <p className="text-slate-400 mb-2 text-sm max-w-xs">{error}</p>
+            <div className="flex flex-col sm:flex-row gap-2 w-full max-w-sm">
+              {isNativeCamera && (
+                <button
+                  onClick={async () => {
+                    try {
+                      const { dataUrl } = await pickFromGallery();
+                      if (dataUrl) {
+                        setImagePreview(dataUrl);
+                        processImage(dataUrl);
+                      }
+                    } catch {
+                      // user cancelled
+                    }
+                  }}
+                  className="flex-1 px-4 py-2.5 bg-white text-slate-900 rounded-xl font-medium text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors"
+                >
+                  <Aperture size={16} /> Choose from Photos
+                </button>
+              )}
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="flex-1 px-4 py-2.5 bg-white text-slate-900 rounded-xl font-medium text-sm flex items-center justify-center gap-2 hover:bg-slate-100 transition-colors"
+              >
+                <Upload size={16} /> {isNativeCamera ? 'Upload File' : 'Upload Image'}
+              </button>
+            </div>
           </div>
         )}
 
