@@ -27,17 +27,33 @@ export const SnapMode: React.FC<SnapModeProps> = ({ onSnapComplete, onAddVocab, 
   const [vocabAdded, setVocabAdded] = useState(false);
 
   useEffect(() => {
-    startCamera();
+    if (isNativeCamera) {
+      // Native: open the system camera immediately when user enters Snap mode.
+      void launchNativeCamera();
+    } else {
+      startCamera();
+    }
     return () => stopCamera();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const startCamera = async () => {
-    // On native iOS, Capacitor Camera plugin handles camera access — skip web getUserMedia
-    // (which can fail in WKWebView and always fails in iOS Simulator).
-    if (isNativeCamera) {
-      setError('Tap the camera icon below to take a photo, or pick one from your library.');
-      return;
+  const launchNativeCamera = async () => {
+    try {
+      const { dataUrl } = await captureNativeCamera();
+      if (dataUrl) {
+        setImagePreview(dataUrl);
+        processImage(dataUrl);
+      } else {
+        // user cancelled — show the picker landing page (no error)
+        setError(null);
+      }
+    } catch {
+      // camera unavailable (e.g. iOS Simulator) or denied — show picker landing page silently
+      setError(null);
     }
+  };
+
+  const startCamera = async () => {
     try {
       const ms = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'environment', width: { ideal: 1920 }, height: { ideal: 1080 } },
@@ -162,7 +178,11 @@ export const SnapMode: React.FC<SnapModeProps> = ({ onSnapComplete, onAddVocab, 
     setError(null);
     setVocabAdded(false);
     stopPractice();
-    startCamera();
+    if (isNativeCamera) {
+      void launchNativeCamera();
+    } else {
+      startCamera();
+    }
   };
 
   const startPractice = async () => {
@@ -218,7 +238,7 @@ export const SnapMode: React.FC<SnapModeProps> = ({ onSnapComplete, onAddVocab, 
           </div>
         )}
 
-        {!imagePreview && !error && (
+        {!imagePreview && !error && !isNativeCamera && (
           <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-4 z-20">
             <button
               onClick={captureImage}
@@ -226,30 +246,6 @@ export const SnapMode: React.FC<SnapModeProps> = ({ onSnapComplete, onAddVocab, 
             >
               <div className="w-14 h-14 bg-white rounded-full shadow-inner" />
             </button>
-            {isNativeCamera && (
-              <button
-                onClick={async () => {
-                  try {
-                    stopCamera();
-                    const { dataUrl } = await captureNativeCamera();
-                    if (dataUrl) {
-                      setImagePreview(dataUrl);
-                      processImage(dataUrl);
-                    } else {
-                      startCamera();
-                    }
-                  } catch {
-                    // user cancelled or denied permission
-                    startCamera();
-                  }
-                }}
-                className="absolute left-6 bottom-2 p-3 bg-white/25 rounded-full border border-white/40 text-white hover:bg-white/35 transition-all"
-                title="Use system camera"
-                aria-label="Use iOS native camera"
-              >
-                <Aperture size={20} />
-              </button>
-            )}
             <button
               onClick={() => fileInputRef.current?.click()}
               className="absolute right-6 bottom-2 p-3 bg-white/25 rounded-full border border-white/40 text-white hover:bg-white/35 transition-all"
@@ -257,6 +253,48 @@ export const SnapMode: React.FC<SnapModeProps> = ({ onSnapComplete, onAddVocab, 
             >
               <Upload size={20} />
             </button>
+          </div>
+        )}
+
+        {/* Native landing page: big "Take Photo" button + small "Photos" + "File" in corners */}
+        {!imagePreview && !error && isNativeCamera && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-6 gap-4">
+            <Camera size={56} className="text-slate-400 mb-2" />
+            <p className="text-slate-300 text-sm max-w-xs">Point at any object to learn its Chinese name.</p>
+            <button
+              onClick={launchNativeCamera}
+              className="px-6 py-3 bg-white text-slate-900 rounded-2xl font-semibold text-base flex items-center gap-2 hover:bg-slate-100 active:scale-95 transition-all shadow-xl"
+            >
+              <Camera size={20} /> Take Photo
+            </button>
+            <div className="absolute right-6 bottom-6 flex gap-3">
+              <button
+                onClick={async () => {
+                  try {
+                    const { dataUrl } = await pickFromGallery();
+                    if (dataUrl) {
+                      setImagePreview(dataUrl);
+                      processImage(dataUrl);
+                    }
+                  } catch {
+                    // cancelled
+                  }
+                }}
+                className="p-3 bg-white/15 backdrop-blur rounded-full border border-white/30 text-white hover:bg-white/25 transition-all"
+                title="Choose from Photos"
+                aria-label="Choose from photo library"
+              >
+                <Aperture size={20} />
+              </button>
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="p-3 bg-white/15 backdrop-blur rounded-full border border-white/30 text-white hover:bg-white/25 transition-all"
+                title="Upload file"
+                aria-label="Upload an image file"
+              >
+                <Upload size={20} />
+              </button>
+            </div>
           </div>
         )}
 
