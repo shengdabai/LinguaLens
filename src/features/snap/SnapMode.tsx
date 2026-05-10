@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Camera, X, Loader2, Volume2, Mic, BookmarkPlus, Upload } from 'lucide-react';
+import { Camera, X, Loader2, Volume2, Mic, BookmarkPlus, Upload, Aperture } from 'lucide-react';
 import { SnapAnalysis, VocabCard } from '../../types';
 import { analyzeImage } from '../../services/geminiService';
 import { ToneVisualizer } from '../../components/ToneVisualizer';
 import { Button } from '../../components/ui/Button';
 import { playBrowserTTS } from '../../utils/audio';
+import { captureNativeCamera, isNativeCamera } from '../../services/camera';
 
 interface SnapModeProps {
   onSnapComplete?: (detectedObject: string) => void;
@@ -219,6 +220,30 @@ export const SnapMode: React.FC<SnapModeProps> = ({ onSnapComplete, onAddVocab, 
             >
               <div className="w-14 h-14 bg-white rounded-full shadow-inner" />
             </button>
+            {isNativeCamera && (
+              <button
+                onClick={async () => {
+                  try {
+                    stopCamera();
+                    const { dataUrl } = await captureNativeCamera();
+                    if (dataUrl) {
+                      setImagePreview(dataUrl);
+                      processImage(dataUrl);
+                    } else {
+                      startCamera();
+                    }
+                  } catch {
+                    // user cancelled or denied permission
+                    startCamera();
+                  }
+                }}
+                className="absolute left-6 bottom-2 p-3 bg-white/25 rounded-full border border-white/40 text-white hover:bg-white/35 transition-all"
+                title="Use system camera"
+                aria-label="Use iOS native camera"
+              >
+                <Aperture size={20} />
+              </button>
+            )}
             <button
               onClick={() => fileInputRef.current?.click()}
               className="absolute right-6 bottom-2 p-3 bg-white/25 rounded-full border border-white/40 text-white hover:bg-white/35 transition-all"
