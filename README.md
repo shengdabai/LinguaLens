@@ -4,31 +4,32 @@
 
 ## Business Context
 
-- **Category:** education product
-- **Audience:** learners, teachers, parents, and education operators who need a clearer learning or exam-prep workflow.
+- **Category:** security and governance tool
+- **Audience:** builders and operators who need safer repositories, cleaner handoffs, and repeatable security checks.
 - **Repository status:** Public repository. Keep examples, docs, and issues free of credentials, private data, and machine-specific paths.
 - **Topics:** ai, chinese-learning, language-learning, learn-chinese, react, tailwindcss, typescript, vite
 
 ## What This Project Is For
 
 - 🔎🀄 LinguaLens 语言透镜 — AI Chinese-learning toolkit: immersive reading, shadowing, translation & fluency coaching. Bring your own key. (React + TS + Vite).
-- Give users a concrete learning workflow instead of a loose collection of content.
-- Make progress, practice, review, or recommendation steps easier to repeat.
+- Find repository risks early without exposing secrets in reports.
+- Make security review repeatable across public and private codebases.
 
 ## Where It Fits
 
-This repository supports productized learning workflows: diagnostic input, guided practice, review loops, and a clearer handoff between learner, teacher, and software.
+This repository belongs in the trust-and-safety layer of the workbench: it helps make code, configuration, and public handoffs safer before they are reused or shown to clients.
 
 ## Technical Overview
 
 - **Primary language:** TypeScript
-- **Detected stack:** TypeScript, Node.js / JavaScript tooling, Vite, React, Tailwind CSS
+- **Detected stack:** TypeScript, Node.js, Vite, React, Tailwind CSS
 - **Default branch:** `main`
 - **Visibility:** `PUBLIC`
 - **License:** MIT License
 
 ## Repository Map
 
+- `src`
 - `LICENSE`
 - `README.md`
 - `SECURITY.md`
@@ -36,7 +37,10 @@ This repository supports productized learning workflows: diagnostic input, guide
 - `package-lock.json`
 - `package.json`
 - `postcss.config.js`
-- `src`
+- `tailwind.config.js`
+- `tsconfig.json`
+- `vite.config.ts`
+- `中文学习产品开发技术文档.md`
 
 ## Quick Start
 
@@ -45,12 +49,15 @@ Use the commands that match the current project state:
 ```bash
 npm install
 npm run dev
+npm run preview
 npm run build
 ```
 
 | Command | Purpose |
 |---|---|
+| `npm install` | Install project dependencies. |
 | `npm run dev` | vite |
+| `npm run preview` | vite preview |
 | `npm run build` | tsc && vite build |
 
 ## Operating Notes
@@ -58,12 +65,12 @@ npm run build
 - Keep real credentials out of the repository. Use local environment files, GitHub repository secrets, or the deployment platform secret manager.
 - If a `.env.example` file exists, treat it as documentation only; never commit filled-in `.env` files.
 - Before publishing screenshots, demos, or client examples, remove private names, internal paths, account IDs, and API endpoints.
-- The `Repository Hygiene` workflow is intended as a lightweight guardrail, not a replacement for product-specific tests.
+- The `Repository Hygiene` workflow is a lightweight guardrail, not a replacement for product-specific tests.
 
 ## Delivery Checklist
 
 - [ ] README describes the user, business outcome, and operating boundary.
-- [ ] Setup or preview commands are current.
+- [ ] Setup or preview commands are current and do not rely on private machine state.
 - [ ] No real secrets, private user data, or machine-local state are tracked.
 - [ ] Screenshots, demos, or sample outputs are safe to share publicly when the repository is public.
 - [ ] Product-specific tests or smoke checks are documented before production use.
