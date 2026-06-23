@@ -34,8 +34,6 @@ export const PROVIDER_MODELS = {
   ],
 } as const;
 
-// Legacy - kept for components that haven't migrated yet
-export const AVAILABLE_MODELS = PROVIDER_MODELS.gemini;
 export type StaticModelId = string;
 
 // Valid model name reference whitelist (update when adding new providers/models):

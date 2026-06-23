@@ -6,8 +6,8 @@ dist/
 .gstack/
 .omc/
 *.tsbuildinfo
+
 # Codex governance: local secrets and machine state
-.env
 .env.*
 !.env.example
 !.env.*.example
@@ -17,7 +17,13 @@ dist/
 id_rsa
 id_dsa
 .npmrc
-.DS_Store
 .omc/
 .codex/
 .claude/local/
+
+# Internal / private docs
+中文学习产品开发技术文档.md
+*.local.md
+
+# macOS
+.DS_Store
