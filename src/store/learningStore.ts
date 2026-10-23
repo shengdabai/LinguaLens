@@ -1,5 +1,6 @@
 import { UserProfile, Quest, VocabCard } from '../types';
 import { STORAGE_KEY } from '../config/constants';
+import { localDateKey } from '../utils/date';
 
 const XP_PER_LEVEL = 500;
 
@@ -105,7 +106,7 @@ function getDefaultProfile(): UserProfile {
     xp: 0,
     level: 1,
     streak: 1,
-    lastActiveDate: new Date().toISOString().split('T')[0],
+    lastActiveDate: localDateKey(),
     quests: getDefaultQuests(),
     achievements: [],
     vocab: [],
@@ -122,7 +123,7 @@ export class LearningStore {
         // Ensure new fields exist for older saved profiles
         if (!profile.vocab) profile.vocab = [];
         if (!profile.achievements) profile.achievements = [];
-        if (!profile.lastActiveDate) profile.lastActiveDate = new Date().toISOString().split('T')[0];
+        if (!profile.lastActiveDate) profile.lastActiveDate = localDateKey();
         if (!profile.dailyXp) profile.dailyXp = {};
         return profile;
       }
@@ -155,7 +156,7 @@ export class LearningStore {
       newAchievements.push(`level_${newLevel}`);
     }
 
-    const today = new Date().toISOString().split('T')[0];
+    const today = localDateKey();
     const dailyXp = { ...profile.dailyXp };
     dailyXp[today] = (dailyXp[today] || 0) + amount;
 
@@ -177,7 +178,7 @@ export class LearningStore {
       id: `vocab_${Date.now()}_${Math.random().toString(36).slice(2)}`,
       interval: 1,
       easeFactor: 2.5,
-      nextReviewDate: new Date().toISOString().split('T')[0],
+      nextReviewDate: localDateKey(),
       reviewCount: 0,
       isFavorite: false,
     };
@@ -220,7 +221,7 @@ export class LearningStore {
         ...card,
         interval,
         easeFactor,
-        nextReviewDate: nextDate.toISOString().split('T')[0],
+        nextReviewDate: localDateKey(nextDate),
         reviewCount: card.reviewCount + 1,
       };
     });
@@ -229,7 +230,7 @@ export class LearningStore {
   }
 
   static getTodayReviewCards(profile: UserProfile): VocabCard[] {
-    const today = new Date().toISOString().split('T')[0];
+    const today = localDateKey();
     return profile.vocab.filter(card => card.nextReviewDate <= today);
   }
 }
