@@ -746,14 +746,24 @@ PRIVACY: LinguaLens does not collect, track, or sell any user data. Your API key
 🔑 自带 API Key — 支持 Gemini / OpenAI / Anthropic。Key 只在你设备上，不上传任何服务器。
 🎓 由数千学员的中文老师亲自设计。
 
+> 2026-10-27：lingualens.app 是另一款同名产品（浏览器词汇替换插件），不是我们的域名，下面三个地址不能再用它。
+> LinguaLens 目前没有公开部署（lingualens.vercel.app 和 lingualens.pages.dev 也是别人的项目），对外介绍页暂用 Z Turns 站内的应用介绍。
+
 ## Privacy Policy URL
-https://lingualens.app/privacy  (TODO: deploy a static page before submission)
+https://zturnsgo.com/privacy_policy
+
+> 2026-10-28 curl 核对：该地址返回 200（`/privacy_policy.html` 308 跳到这里）。这一页现在没有提到 LinguaLens。
+> 提交前，在这份隐私政策里加一段 LinguaLens 说明：API Key 只存在用户设备上，请求直接发给用户选择的 AI 服务商（Gemini / OpenAI / Anthropic），Z Turns 不接收这些内容。
 
 ## Support URL
-https://lingualens.app/support  (TODO)
+https://zturnsgo.com/apps#lingualens
+
+> 2026-10-28 curl 核对：zturnsgo.com 没有单独的联系页或支持页（`/contact`、`/support` 都返回 404）。
+> `/apps` 返回 200，是 LinguaLens 的介绍页；每页页脚的「Legal & Contact」都有支持邮箱 zturnsuk@gmail.com（服务条款第 16 条写明它负责一般支持）。
+> `#lingualens` 锚点随 2026-10-28 的文案改动上线。
 
 ## Marketing URL
-https://lingualens.app  (TODO)
+https://zturnsgo.com/apps#lingualens
 
 ## Screenshots required
 - 6.7" iPhone (1290×2796) — 3-10 screenshots
