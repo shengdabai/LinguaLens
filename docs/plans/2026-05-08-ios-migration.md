@@ -8,7 +8,7 @@
 
 **Tech Stack:** React 18, TypeScript, Vite 5, Tailwind 3, Capacitor 6, Xcode 15+, iOS 16 deployment target.
 
-**Project root:** `/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens/`
+**Project root:** `<project-root>/`
 All `cd` commands assume this root.
 
 ---
@@ -56,7 +56,7 @@ Append-only. Each entry: date / step / what changed / why.
 - [ ] **Step A1.2: Commit.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && git add INSTALL_LOG.md docs/2026-05-08-ios-migration-design.md && git commit -m "docs: add iOS migration design + install log"
+cd "<project-root>/" && git add INSTALL_LOG.md docs/2026-05-08-ios-migration-design.md && git commit -m "docs: add iOS migration design + install log"
 ```
 
 (If repo is not a git repo, run `git init && git add -A && git commit -m "initial: pre-iOS-migration snapshot"` first.)
@@ -105,7 +105,7 @@ the underlying storage from `localStorage` to `@capacitor/preferences` for nativ
 - [ ] **Step A2.2: Commit.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && git add API_KEY_AUDIT.md && git commit -m "docs: API key flow audit"
+cd "<project-root>/" && git add API_KEY_AUDIT.md && git commit -m "docs: API key flow audit"
 ```
 
 ---
@@ -120,15 +120,15 @@ cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-Lin
 Run sequentially (not in one command — each may prompt for peer dep resolution):
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && npm install --save @capacitor/core@^6 @capacitor/ios@^6
+cd "<project-root>/" && npm install --save @capacitor/core@^6 @capacitor/ios@^6
 ```
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && npm install --save @capacitor/preferences@^6 @capacitor/camera@^6 @capacitor/app@^6 @capacitor/status-bar@^6 @capacitor/haptics@^6
+cd "<project-root>/" && npm install --save @capacitor/preferences@^6 @capacitor/camera@^6 @capacitor/app@^6 @capacitor/status-bar@^6 @capacitor/haptics@^6
 ```
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && npm install --save-dev @capacitor/cli@^6
+cd "<project-root>/" && npm install --save-dev @capacitor/cli@^6
 ```
 
 Expected: `package.json` gains 5 runtime + 1 dev dep, no errors.
@@ -138,7 +138,7 @@ Expected: `package.json` gains 5 runtime + 1 dev dep, no errors.
 - [ ] **Step A3.2: Verify install.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && /bin/ls node_modules/@capacitor 2>&1
+cd "<project-root>/" && /bin/ls node_modules/@capacitor 2>&1
 ```
 
 Expected output includes: `app cli camera core haptics ios preferences status-bar`
@@ -146,7 +146,7 @@ Expected output includes: `app cli camera core haptics ios preferences status-ba
 - [ ] **Step A3.3: Commit lockfile.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && git add package.json package-lock.json && git commit -m "chore: add Capacitor 6 + native plugins"
+cd "<project-root>/" && git add package.json package-lock.json && git commit -m "chore: add Capacitor 6 + native plugins"
 ```
 
 ---
@@ -190,7 +190,7 @@ export default defineConfig({
 - [ ] **Step A4.2: Commit.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && git add vite.config.ts && git commit -m "build: configure Vite for Capacitor (base ./, target es2017)"
+cd "<project-root>/" && git add vite.config.ts && git commit -m "build: configure Vite for Capacitor (base ./, target es2017)"
 ```
 
 ---
@@ -251,7 +251,7 @@ Modify `package.json` "scripts" block — add lines (keep existing dev/build/pre
 - [ ] **Step A5.3: Build first to populate dist/.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && npm run build
+cd "<project-root>/" && npm run build
 ```
 
 Expected: `dist/` populated, no TS errors. If `tsc` complains about unused locals, those are existing issues — log in INSTALL_LOG.md and fix in Task C0 if blocking.
@@ -259,7 +259,7 @@ Expected: `dist/` populated, no TS errors. If `tsc` complains about unused local
 - [ ] **Step A5.4: Add iOS platform.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && npx cap add ios
+cd "<project-root>/" && npx cap add ios
 ```
 
 Expected: Creates `ios/App/App.xcworkspace`, runs CocoaPods install. Takes 1-3 minutes (CocoaPods).
@@ -267,7 +267,7 @@ Expected: Creates `ios/App/App.xcworkspace`, runs CocoaPods install. Takes 1-3 m
 - [ ] **Step A5.5: Sync.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && npx cap sync ios
+cd "<project-root>/" && npx cap sync ios
 ```
 
 Expected: "✔ Sync finished" with all installed plugins listed.
@@ -275,7 +275,7 @@ Expected: "✔ Sync finished" with all installed plugins listed.
 - [ ] **Step A5.6: Commit.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && git add capacitor.config.ts package.json package-lock.json ios/ && git commit -m "feat: add iOS platform via Capacitor"
+cd "<project-root>/" && git add capacitor.config.ts package.json package-lock.json ios/ && git commit -m "feat: add iOS platform via Capacitor"
 ```
 
 If `ios/App/App/public/` is gitignored by Capacitor's default `.gitignore` it's fine.
@@ -287,7 +287,7 @@ If `ios/App/App/public/` is gitignored by Capacitor's default `.gitignore` it's 
 - [ ] **Step A6.1: Open Xcode.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && npx cap open ios
+cd "<project-root>/" && npx cap open ios
 ```
 
 Xcode opens `ios/App/App.xcworkspace`.
@@ -313,7 +313,7 @@ In simulator: Settings → enter Gemini API key → run translation. If translat
 - [ ] **Step A6.5: Commit any post-init Xcode-modified files.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && git add -A && git status && git commit -m "chore: iOS deployment target = 16.0" --allow-empty
+cd "<project-root>/" && git add -A && git status && git commit -m "chore: iOS deployment target = 16.0" --allow-empty
 ```
 
 ---
@@ -430,7 +430,7 @@ If main.tsx is not async, wrap the existing `ReactDOM.createRoot(...).render(...
 - [ ] **Step B1.4: Build + sync + simulator smoke test.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && npm run ios:sync
+cd "<project-root>/" && npm run ios:sync
 ```
 
 Re-run in Xcode. Settings should persist after relaunch.
@@ -438,7 +438,7 @@ Re-run in Xcode. Settings should persist after relaunch.
 - [ ] **Step B1.5: Commit.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && git add src/services/storage.ts src/store/settingsStore.ts src/main.tsx && git commit -m "feat: storage abstraction (Preferences on native, localStorage on web)"
+cd "<project-root>/" && git add src/services/storage.ts src/store/settingsStore.ts src/main.tsx && git commit -m "feat: storage abstraction (Preferences on native, localStorage on web)"
 ```
 
 ---
@@ -528,13 +528,13 @@ Add a new button next to the existing capture button (inside the `!imagePreview 
 - [ ] **Step B2.3: Build + sync.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && npm run ios:sync
+cd "<project-root>/" && npm run ios:sync
 ```
 
 - [ ] **Step B2.4: Commit.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && git add src/services/camera.ts src/features/snap/SnapMode.tsx && git commit -m "feat(snap): native camera bridge with web preview fallback"
+cd "<project-root>/" && git add src/services/camera.ts src/features/snap/SnapMode.tsx && git commit -m "feat(snap): native camera bridge with web preview fallback"
 ```
 
 ---
@@ -547,7 +547,7 @@ cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-Lin
 - [ ] **Step B3.1: Read current Info.plist.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && cat ios/App/App/Info.plist | head -60
+cd "<project-root>/" && cat ios/App/App/Info.plist | head -60
 ```
 
 - [ ] **Step B3.2: Edit Info.plist — add the two keys before the closing `</dict>`.**
@@ -568,13 +568,13 @@ Insert these XML lines:
 - [ ] **Step B3.3: Sync (re-copies Info.plist into Xcode project metadata).**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && npx cap sync ios
+cd "<project-root>/" && npx cap sync ios
 ```
 
 - [ ] **Step B3.4: Commit.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && git add ios/App/App/Info.plist && git commit -m "feat(ios): add Camera/Photo/Microphone usage descriptions"
+cd "<project-root>/" && git add ios/App/App/Info.plist && git commit -m "feat(ios): add Camera/Photo/Microphone usage descriptions"
 ```
 
 ---
@@ -601,13 +601,13 @@ if (Capacitor.isNativePlatform()) {
 - [ ] **Step B4.2: Build + sync + smoke.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && npm run ios:sync
+cd "<project-root>/" && npm run ios:sync
 ```
 
 - [ ] **Step B4.3: Commit.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && git add src/main.tsx && git commit -m "feat(ios): configure status bar"
+cd "<project-root>/" && git add src/main.tsx && git commit -m "feat(ios): configure status bar"
 ```
 
 ---
@@ -670,7 +670,7 @@ Format: ✅ pass / ⚠️ degraded / ❌ broken / 🚫 skipped
 - [ ] **Step C2.4: Commit log.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && git add docs/DEVICE_TEST_LOG.md && git commit -m "test(ios): device test matrix v1"
+cd "<project-root>/" && git add docs/DEVICE_TEST_LOG.md && git commit -m "test(ios): device test matrix v1"
 ```
 
 ---
@@ -750,17 +750,10 @@ PRIVACY: LinguaLens does not collect, track, or sell any user data. Your API key
 > LinguaLens 目前没有公开部署（lingualens.vercel.app 和 lingualens.pages.dev 也是别人的项目），对外介绍页暂用 Z Turns 站内的应用介绍。
 
 ## Privacy Policy URL
-https://zturnsgo.com/privacy_policy
-
-> 2026-10-28 curl 核对：该地址返回 200（`/privacy_policy.html` 308 跳到这里）。这一页现在没有提到 LinguaLens。
-> 提交前，在这份隐私政策里加一段 LinguaLens 说明：API Key 只存在用户设备上，请求直接发给用户选择的 AI 服务商（Gemini / OpenAI / Anthropic），Z Turns 不接收这些内容。
+未定（阻塞提交）：需要在我们自己控制的域名上发布 LinguaLens 隐私政策页，再填这里。zturnsgo.com 的隐私政策只覆盖 Z Turns 网站，不能直接代用。
 
 ## Support URL
-https://zturnsgo.com/apps#lingualens
-
-> 2026-10-28 curl 核对：zturnsgo.com 没有单独的联系页或支持页（`/contact`、`/support` 都返回 404）。
-> `/apps` 返回 200，是 LinguaLens 的介绍页；每页页脚的「Legal & Contact」都有支持邮箱 zturnsuk@gmail.com（服务条款第 16 条写明它负责一般支持）。
-> `#lingualens` 锚点随 2026-10-28 的文案改动上线。
+未定（阻塞提交）：需要在自有域名上建支持页，或确定用哪个支持邮箱和页面。
 
 ## Marketing URL
 https://zturnsgo.com/apps#lingualens
@@ -787,7 +780,7 @@ Screens to capture: Snap result panel, Translation breakdown, Reader with word l
 - [ ] **Step D1.2: Commit.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && git add docs/APP_STORE_ASSETS.md && git commit -m "docs: App Store metadata draft"
+cd "<project-root>/" && git add docs/APP_STORE_ASSETS.md && git commit -m "docs: App Store metadata draft"
 ```
 
 ---
@@ -830,7 +823,7 @@ cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-Lin
 - [ ] **Step D2.3: Commit.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && git add ios/App/App/PrivacyInfo.xcprivacy && git commit -m "feat(ios): add privacy manifest (no tracking, no data collection)"
+cd "<project-root>/" && git add ios/App/App/PrivacyInfo.xcprivacy && git commit -m "feat(ios): add privacy manifest (no tracking, no data collection)"
 ```
 
 ---
@@ -848,7 +841,7 @@ cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-Lin
 - [ ] **Step D3.4: Move to `docs/screenshots/6.7-inch/` and commit.**
 
 ```bash
-cd "/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens" && /bin/mkdir -p docs/screenshots/6.7-inch && git add docs/screenshots && git commit -m "docs: app store screenshots for 6.7-inch iPhone"
+cd "<project-root>/" && /bin/mkdir -p docs/screenshots/6.7-inch && git add docs/screenshots && git commit -m "docs: app store screenshots for 6.7-inch iPhone"
 ```
 
 (Repeat for 6.5" simulator. iPad if scope includes.)
