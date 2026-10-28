@@ -103,17 +103,26 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ config, settings, onSetting
   const currentModel = getModelKey(settings, config.id);
   const hasKey = !!keyInput.trim();
 
-  const handleSaveKey = () => {
-    const updated = SettingsStore.update({ [keyField(config.id)]: keyInput.trim() } as Partial<AppSettings>);
+  const handleSaveKey = async () => {
+    setSaved(false);
+    try {
+    const updated = await SettingsStore.update({ [keyField(config.id)]: keyInput.trim() } as Partial<AppSettings>);
     onSettingsChange(updated);
     setSaved(true);
     setTestState('idle');
     setTimeout(() => setSaved(false), 2000);
+    } catch {
+      window.alert("Could not save settings. Please try again.");
+    }
   };
 
-  const handleModelChange = (modelId: string) => {
-    const updated = SettingsStore.update({ [modelField(config.id)]: modelId } as Partial<AppSettings>);
+  const handleModelChange = async (modelId: string) => {
+    try {
+    const updated = await SettingsStore.update({ [modelField(config.id)]: modelId } as Partial<AppSettings>);
     onSettingsChange(updated);
+    } catch {
+      window.alert("Could not save settings. Please try again.");
+    }
   };
 
   const handleTest = async () => {
@@ -126,11 +135,15 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ config, settings, onSetting
     }
   };
 
-  const handleClear = () => {
+  const handleClear = async () => {
+    try {
     setKeyInput('');
-    const updated = SettingsStore.update({ [keyField(config.id)]: '' } as Partial<AppSettings>);
+    const updated = await SettingsStore.update({ [keyField(config.id)]: '' } as Partial<AppSettings>);
     onSettingsChange(updated);
     setTestState('idle');
+    } catch {
+      window.alert("Could not save settings. Please try again.");
+    }
   };
 
   return (
@@ -275,9 +288,13 @@ interface PrimaryProviderProps {
 }
 
 const PrimaryProviderSelector: React.FC<PrimaryProviderProps> = ({ settings, onSettingsChange }) => {
-  const handleChange = (provider: AIProvider) => {
-    const updated = SettingsStore.update({ provider });
+  const handleChange = async (provider: AIProvider) => {
+    try {
+    const updated = await SettingsStore.update({ provider });
     onSettingsChange(updated);
+    } catch {
+      window.alert("Could not save settings. Please try again.");
+    }
   };
 
   const configuredProviders = PROVIDERS.filter((p) => !!getKey(settings, p.id).trim());

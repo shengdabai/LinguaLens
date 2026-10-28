@@ -16,6 +16,13 @@ const isNative = Capacitor.isNativePlatform();
 
 const cache = new Map<string, string>();
 let hydrated = false;
+const pending = new Map<string, Promise<void>>();
+function serialWrite(key: string, write: () => Promise<void>): Promise<void> {
+  const next = (pending.get(key) ?? Promise.resolve()).catch(() => {}).then(write);
+  pending.set(key, next);
+  void next.finally(() => { if (pending.get(key) === next) pending.delete(key); }).catch(() => {});
+  return next;
+}
 
 export const Storage = {
   /** Pre-load known keys into the in-memory cache. Idempotent. */
@@ -52,33 +59,26 @@ export const Storage = {
     return null;
   },
 
-  /** Async write. Updates cache immediately so subsequent getSync sees the new value. */
+  /** Publish to cache only after persistence succeeds; preserve per-key write order. */
   async set(key: string, value: string): Promise<void> {
-    cache.set(key, value);
-    if (isNative) {
-      await Preferences.set({ key, value });
-    } else {
-      localStorage.setItem(key, value);
-    }
+    await serialWrite(key, async () => {
+      if (isNative) await Preferences.set({ key, value });
+      else localStorage.setItem(key, value);
+      cache.set(key, value);
+    });
   },
 
-  /** Fire-and-forget write. Use only when caller cannot await. */
+  /** For callers with no success UI; failures are explicitly reported. */
   setFireAndForget(key: string, value: string): void {
-    cache.set(key, value);
-    if (isNative) {
-      void Preferences.set({ key, value });
-    } else {
-      localStorage.setItem(key, value);
-    }
+    void Storage.set(key, value).catch(() => console.error('Failed to persist settings'));
   },
 
   async remove(key: string): Promise<void> {
-    cache.delete(key);
-    if (isNative) {
-      await Preferences.remove({ key });
-    } else {
-      localStorage.removeItem(key);
-    }
+    await serialWrite(key, async () => {
+      if (isNative) await Preferences.remove({ key });
+      else localStorage.removeItem(key);
+      cache.delete(key);
+    });
   },
 };
 

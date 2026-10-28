@@ -14,6 +14,8 @@ const DEFAULT_SETTINGS: AppSettings = {
   subscriptionTier: 'free',
 };
 
+let pendingUpdate: Promise<unknown> = Promise.resolve();
+
 export const SettingsStore = {
   load(): AppSettings {
     try {
@@ -24,15 +26,18 @@ export const SettingsStore = {
     }
   },
 
-  save(settings: AppSettings): void {
-    Storage.setFireAndForget(SETTINGS_KEY, JSON.stringify(settings));
+  async save(settings: AppSettings): Promise<void> {
+    await Storage.set(SETTINGS_KEY, JSON.stringify(settings));
   },
 
-  update(partial: Partial<AppSettings>): AppSettings {
-    const current = SettingsStore.load();
-    const updated = { ...current, ...partial };
-    SettingsStore.save(updated);
-    return updated;
+  update(partial: Partial<AppSettings>): Promise<AppSettings> {
+    const next = pendingUpdate.catch(() => {}).then(async () => {
+      const updated = { ...SettingsStore.load(), ...partial };
+      await SettingsStore.save(updated);
+      return updated;
+    });
+    pendingUpdate = next;
+    return next;
   },
 
   getProvider(): AIProvider {
@@ -82,7 +87,7 @@ export const SettingsStore = {
     return SettingsStore.load().subscriptionTier !== 'free';
   },
 
-  clearApiKey(): void {
-    SettingsStore.update({ apiKey: '' });
+  async clearApiKey(): Promise<void> {
+    await SettingsStore.update({ apiKey: '' });
   },
 };
