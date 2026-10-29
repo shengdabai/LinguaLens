@@ -5,6 +5,9 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
+    "typecheck": "tsc --noEmit",
+    "test:audio": "node --test tests/*.test.mjs",
+    "test:audio-browser": "node --test tests/audio-recorder.browser.mjs",
     "preview": "vite preview",
     "ios:sync": "npm run build && npx cap sync ios",
     "ios:open": "npx cap open ios",
