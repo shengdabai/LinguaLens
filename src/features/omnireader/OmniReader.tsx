@@ -189,7 +189,7 @@ export const OmniReader: React.FC<OmniReaderProps> = ({ onRead, onNeedApiKey }) 
   if (mode === ReaderMode.INPUT) {
     return (
       <div className="p-4 md:p-6 max-w-2xl mx-auto space-y-4">
-        {error && <p role="alert">{error}</p>}
+        {error && <p role="alert" className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl px-4 py-2.5">{error}</p>}
         <div>
           <label htmlFor="omnireader-source" className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Source Content</label>
           <div className="bg-white dark:bg-surface-dark-card rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
@@ -272,7 +272,7 @@ export const OmniReader: React.FC<OmniReaderProps> = ({ onRead, onNeedApiKey }) 
         <div className="w-16" />
       </div>
 
-      {error && <p role="alert">{error}</p>}
+      {error && <p role="alert" className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl px-4 py-2.5">{error}</p>}
       <div className="flex-1 flex flex-col items-center justify-center p-8">
         <div
           className={`w-56 h-56 rounded-3xl shadow-2xl bg-gradient-to-br from-brand-400 to-brand-800 flex items-center justify-center mb-8 transform transition-transform duration-700 ${

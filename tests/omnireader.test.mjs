@@ -56,6 +56,23 @@ test('empty speech response exits loading, preserves input and offers retry', as
   assert.equal(app.reads(), 0);
 });
 
+for (const [mode, options, message] of [
+  ['input', { speech: async () => null }, 'Could not generate audio. Please try again.'],
+  ['player', { resume: async () => { throw new Error('synthetic denial'); } }, 'Could not play audio. Please try again.'],
+]) {
+  test(`${mode} error alert uses the existing light and dark error styles`, async () => {
+    const app = await reader(options);
+    await app.start();
+    const alert = nodes(app.render()).find(node => node.props?.role === 'alert');
+    assert.ok(alert);
+    assert.equal(text(alert), message);
+    const classes = (alert.props.className ?? '').split(/\s+/);
+    for (const name of ['text-red-600', 'dark:text-red-400', 'bg-red-50', 'dark:bg-red-900/20']) {
+      assert.ok(classes.includes(name), `Missing error style: ${name}`);
+    }
+  });
+}
+
 test('Back cancels pending generation without autoplay or learning credit', async () => {
   const response = deferred();
   const app = await reader({ speech: () => response.promise });
