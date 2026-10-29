@@ -1,21 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { readFileSync } from 'node:fs';
 import { createServer } from 'vite';
 
 // Supply an already-installed Playwright module; this runner never installs packages.
 const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
 const server = await createServer({
   server: { host: '127.0.0.1', port: 0, strictPort: true },
-  plugins: process.env.AUDIO_RECORDER_BASELINE ? [{
-    name: 'recording-baseline',
-    enforce: 'pre',
-    transform(_code, id) {
-      if (id.endsWith('/src/features/fluency/AudioRecorder.tsx')) {
-        return readFileSync(new URL('../.omc/verification/u05-before/src/features/fluency/AudioRecorder.tsx', import.meta.url), 'utf8');
-      }
-    },
-  }] : [],
 });
 let browser;
 

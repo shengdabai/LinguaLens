@@ -105,7 +105,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplet
             disabled={isStarting || isEvaluating}
             aria-busy={isStarting}
             aria-label="Start recording"
-            className="group relative flex h-20 w-20 items-center justify-center rounded-full bg-brand-600 text-white shadow-xl transition-all hover:scale-105 hover:shadow-brand-400/40"
+            className="group relative flex h-20 w-20 items-center justify-center rounded-full bg-brand-600 text-white shadow-xl transition-all enabled:hover:scale-105 enabled:hover:shadow-brand-400/40 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Mic className="h-8 w-8" />
           </button>
