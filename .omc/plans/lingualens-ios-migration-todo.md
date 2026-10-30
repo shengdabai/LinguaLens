@@ -2,7 +2,7 @@
 
 **Detail plan:** `docs/plans/2026-05-08-ios-migration.md`
 **Spec:** `docs/2026-05-08-ios-migration-design.md`
-**Project root:** `/Users/tonysheng/Desktop/项目开发/08-中文教学项目/语言透镜-LinguaLens/`
+**Project root:** `<project-root>/`
 
 Resume rule: read this file → skip every `[x]` → continue from first `[ ]`.
 Mark `[!]` if blocked, with one-line reason.

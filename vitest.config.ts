@@ -6,6 +6,8 @@ export default defineConfig({
   test: {
     environment: 'jsdom',
     globals: true,
+    // Only the vitest suites under src/; tests/*.test.mjs run with node --test (npm run test:audio).
+    include: ['src/**/*.test.{ts,tsx}'],
     // node_modules.nosync is the iCloud-excluded copy of node_modules; vitest's default
     // exclude only covers node_modules/, so without this line it collects third-party tests.
     exclude: [...configDefaults.exclude, '**/node_modules.nosync/**'],
