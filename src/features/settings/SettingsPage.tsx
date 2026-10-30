@@ -406,9 +406,9 @@ export const SettingsPage: React.FC = () => {
       <section className="space-y-3">
         <h2 className="text-base font-bold text-slate-800 dark:text-slate-200 flex items-center gap-2">
           <Crown size={16} className="text-yellow-500" />
-          Subscription Plans
+          Plans
         </h2>
-        <p className="text-sm text-slate-500 dark:text-slate-400">No API key? Subscribe to use AI features powered by our platform.</p>
+        <p className="text-sm text-slate-500 dark:text-slate-400">LinguaLens runs on your own AI provider key. Hosted plans that need no key are planned but not on sale yet.</p>
 
         <div className="grid grid-cols-1 gap-3">
           {PLANS.map((plan) => (
@@ -469,18 +469,21 @@ export const SettingsPage: React.FC = () => {
         </div>
 
         <p className="text-xs text-slate-400 text-center pt-2">
-          All paid plans include a 7-day free trial. Cancel anytime.
+          No subscription is needed today.
         </p>
       </section>
     </div>
   );
 };
 
+// Only the bring-your-own-key mode exists today: the app has no subscription, quota, or trial code
+// (settingsStore keeps subscriptionTier at 'free' and nothing counts daily use). Paid plans stay off this
+// page until they can actually be bought.
 const PLANS = [
   {
     id: 'free',
     name: 'Free',
-    description: 'Try the essentials',
+    description: 'Every tool, with your own AI key',
     price: '$0',
     period: 'forever',
     highlighted: false,
@@ -488,70 +491,9 @@ const PLANS = [
     icon: Zap,
     cta: 'Current Plan',
     features: [
-      '10 Snap analyses / day',
-      '20 translations / day',
-      '3 Fluency Coach sessions / day',
-      '5-min Roleplay / day',
-      '50 vocab cards',
-    ],
-  },
-  {
-    id: 'pro',
-    name: 'Pro',
-    description: 'For dedicated learners',
-    price: '$9.99',
-    period: '/ month',
-    highlighted: false,
-    badge: null,
-    icon: Sparkles,
-    cta: 'Subscribe to Pro',
-    features: [
-      '100 Snap analyses / day',
-      'Unlimited translations (all languages)',
-      '30 Fluency Coach sessions / day',
-      '30 min Roleplay / day',
-      '500 vocab cards + SRS review',
-      'Shadowing & Script Drafting',
-      'Multi-device sync',
-    ],
-  },
-  {
-    id: 'premium',
-    name: 'Premium',
-    description: 'Unlimited everything',
-    price: '$19.99',
-    period: '/ month',
-    highlighted: true,
-    badge: 'Most Popular',
-    icon: Crown,
-    cta: 'Subscribe to Premium',
-    features: [
-      'Everything in Pro',
-      'Unlimited all AI features',
-      '120 min Live Tutor / day',
-      'Detailed pronunciation reports',
-      'Unlimited vocab cards',
-      'Personal learning report',
-      'Priority email support',
-    ],
-  },
-  {
-    id: 'team',
-    name: 'Team',
-    description: 'For organizations & schools',
-    price: 'Custom',
-    period: 'contact us',
-    highlighted: false,
-    badge: null,
-    icon: Building2,
-    cta: 'Contact Sales',
-    features: [
-      'Everything in Premium',
-      'Unlimited usage for all members',
-      'Custom roleplay scenarios',
-      'Team learning analytics',
-      'CSV/JSON data export',
-      'Dedicated account manager',
+      'All learning tools in the app',
+      'Your own Gemini, OpenAI, or Anthropic key',
+      'No daily limits set by LinguaLens; your AI provider\'s own limits and charges apply',
     ],
   },
 ];

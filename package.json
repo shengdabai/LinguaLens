@@ -5,22 +5,40 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "typecheck": "tsc --noEmit",
+    "test:audio": "node --test tests/*.test.mjs",
+    "test:audio-browser": "node --test tests/audio-recorder.browser.mjs",
+    "preview": "vite preview",
+    "ios:sync": "npm run build && npx cap sync ios",
+    "ios:open": "npx cap open ios",
+    "ios:run": "npx cap run ios",
+    "test": "vitest run && node --test tests/*.test.mjs",
+    "test:unit": "vitest run"
   },
   "dependencies": {
+    "@capacitor/app": "^6.0.3",
+    "@capacitor/camera": "^6.1.3",
+    "@capacitor/core": "^6.2.1",
+    "@capacitor/haptics": "^6.0.3",
+    "@capacitor/ios": "^6.2.1",
+    "@capacitor/preferences": "^6.0.4",
+    "@capacitor/status-bar": "^6.0.3",
     "@google/genai": "^0.7.0",
     "lucide-react": "^0.441.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
+    "@capacitor/cli": "^6.2.1",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "@vitejs/plugin-react": "^6.1.1",
     "autoprefixer": "^10.4.20",
+    "jsdom": "^29.1.1",
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.11",
     "typescript": "^5.5.3",
-    "vite": "^8.3.0"
+    "vite": "^8.3.0",
+    "vitest": "^4.1.12"
   }
 }

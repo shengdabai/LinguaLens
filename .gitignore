@@ -27,3 +27,6 @@ id_dsa
 
 # macOS
 .DS_Store
+
+# local process notes (codex-fleet / design hooks)
+.impeccable/

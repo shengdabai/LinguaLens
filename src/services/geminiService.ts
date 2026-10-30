@@ -234,6 +234,7 @@ export async function evaluatePronunciation(
 ): Promise<FeedbackResult> {
   const ai = getGeminiAI();
   const base64Audio = await blobToBase64(audioBlob);
+  const mimeType = audioBlob.type.split(';')[0].trim() || 'audio/webm';
 
   const prompt = `You are an expert Chinese language tutor.
 The student was asked to read: "${originalText}".
@@ -251,7 +252,7 @@ Return JSON with:
     contents: {
       parts: [
         { text: prompt },
-        { inlineData: { mimeType: audioBlob.type || 'audio/webm', data: base64Audio } },
+        { inlineData: { mimeType, data: base64Audio } },
       ],
     },
     config: {
