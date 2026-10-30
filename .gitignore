@@ -4,8 +4,29 @@ dist/
 .env.local
 .env.*.local
 .gstack/
+.omc/
 *.tsbuildinfo
 
-# local process notes (codex-fleet / design hooks)
+# Codex governance: local secrets and machine state
+.env.*
+!.env.example
+!.env.*.example
+*.pem
+*.p12
+*.pfx
+id_rsa
+id_dsa
+.npmrc
 .omc/
+.codex/
+.claude/local/
+
+# Internal / private docs
+中文学习产品开发技术文档.md
+*.local.md
+
+# macOS
+.DS_Store
+
+# local process notes (codex-fleet / design hooks)
 .impeccable/

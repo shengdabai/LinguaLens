@@ -215,6 +215,16 @@ const ProviderCard: React.FC<ProviderCardProps> = ({ config, settings, onSetting
           </div>
         </div>
 
+        {/* Anthropic proxy notice */}
+        {config.id === 'anthropic' && (
+          <div className="flex items-start gap-2 rounded-xl bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800 px-3 py-2.5 text-xs text-orange-700 dark:text-orange-300">
+            <span className="mt-0.5 shrink-0">⚠️</span>
+            <span>
+              <strong>Requires a server-side proxy.</strong> Browsers block direct Anthropic API calls (CORS). Features will fail silently until a proxy is configured. Use <strong>Gemini</strong> or <strong>OpenAI</strong> for full functionality.
+            </span>
+          </div>
+        )}
+
         {/* Model selector */}
         <div className="space-y-1.5 pt-1 border-t border-slate-100 dark:border-slate-800">
           <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Model</label>

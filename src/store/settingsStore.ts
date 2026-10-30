@@ -46,6 +46,10 @@ export const SettingsStore = {
       case 'anthropic': return settings.apiKeyAnthropic.trim();
       case 'gemini':
       default:
+        // WARNING: VITE_GEMINI_API_KEY is only safe for local dev (localhost).
+        // If set on a public deployment (Vercel/Netlify), the key will be bundled
+        // into the JS output and visible to anyone via browser DevTools. Never set
+        // this env var on a publicly accessible host.
         return settings.apiKey.trim() || (import.meta.env.VITE_GEMINI_API_KEY ?? '');
     }
   },
