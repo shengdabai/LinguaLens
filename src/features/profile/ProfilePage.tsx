@@ -1,6 +1,7 @@
 import React from 'react';
 import { UserProfile } from '../../types';
 import { Award, Flame, Zap, TrendingUp, BookOpen } from 'lucide-react';
+import { localDateKey } from '../../utils/date';
 
 interface ProfilePageProps {
   profile: UserProfile;
@@ -111,7 +112,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ profile }) => {
           {(() => {
             const last7 = Array.from({ length: 7 }, (_, i) => {
               const date = new Date(Date.now() - (6 - i) * 86400000);
-              const key = date.toISOString().split('T')[0];
+              const key = localDateKey(date);
               return profile.dailyXp?.[key] ?? 0;
             });
             const maxXp = Math.max(...last7, 1);

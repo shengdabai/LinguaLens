@@ -65,7 +65,8 @@ async function callGemini(
   model: string,
   options: GenerateOptions,
 ): Promise<string> {
-  const ai = new GoogleGenAI({ apiKey });
+  // Direct REST API call (bypasses @google/genai SDK which had compatibility issues
+  // with iOS WKWebView under ES2017 target — see INSTALL_LOG 2026-05-10).
   const userText = buildUserText(prompt, options);
 
   const parts: Array<Record<string, unknown>> = [];
@@ -74,19 +75,49 @@ async function callGemini(
     parts.push({ inlineData: { mimeType: options.imageMimeType || 'image/jpeg', data: options.imageBase64 } });
   }
 
-  const contents = parts.length > 0 ? { role: 'user' as const, parts } : prompt;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const body: Record<string, any> = {
+    contents: [{ role: 'user', parts: parts.length > 0 ? parts : [{ text: prompt }] }],
+  };
+
+  const systemPrompt = buildSystemPrompt(options);
+  if (systemPrompt) body.systemInstruction = { parts: [{ text: systemPrompt }] };
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const config: Record<string, any> = {};
-  const systemPrompt = buildSystemPrompt(options);
-  if (systemPrompt) config.systemInstruction = systemPrompt;
-  if (options.jsonMode) config.responseMimeType = 'application/json';
-  if (options.geminiSchema) config.responseSchema = options.geminiSchema;
-  if (options.temperature !== undefined) config.temperature = options.temperature;
+  const generationConfig: Record<string, any> = {};
+  if (options.jsonMode) generationConfig.responseMimeType = 'application/json';
+  if (options.geminiSchema) generationConfig.responseSchema = options.geminiSchema;
+  if (options.temperature !== undefined) generationConfig.temperature = options.temperature;
+  if (Object.keys(generationConfig).length > 0) body.generationConfig = generationConfig;
 
-  const response = await ai.models.generateContent({ model, contents, config });
-  if (!response.text) throw new Error('No response from Gemini');
-  return response.text;
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+
+  if (!res.ok) {
+    const errBody = await res.text().catch(() => '');
+    let message = `Gemini API error ${res.status}`;
+    try {
+      const parsed = JSON.parse(errBody);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const m = (parsed as any)?.error?.message;
+      if (m) message = `Gemini: ${m}`;
+    } catch {
+      if (errBody) message = `Gemini ${res.status}: ${errBody.slice(0, 200)}`;
+    }
+    throw new Error(message);
+  }
+
+  const data = await res.json();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const text = (data as any)?.candidates?.[0]?.content?.parts
+    ?.map((p: { text?: string }) => p.text || '')
+    ?.join('') || '';
+  if (!text) throw new Error('No response from Gemini');
+  return text;
 }
 
 async function callOpenAI(

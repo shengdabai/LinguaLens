@@ -1,5 +1,6 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Mic, Square, RotateCcw, UploadCloud, Loader2 } from 'lucide-react';
+import { AudioRecordingSession } from '../../services/audioRecording';
 
 interface AudioRecorderProps {
   onRecordingComplete: (blob: Blob) => void;
@@ -11,52 +12,66 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplet
   const [hasRecorded, setHasRecorded] = useState(false);
   const [audioUrl, setAudioUrl] = useState<string | null>(null);
   const [recordingBlob, setRecordingBlob] = useState<Blob | null>(null);
-  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
-  const chunksRef = useRef<Blob[]>([]);
+  const [isStarting, setIsStarting] = useState(false);
+  const [sizeError, setSizeError] = useState<string | null>(null);
+  const sessionRef = useRef<AudioRecordingSession | null>(null);
+  const startingRef = useRef(false);
+  const mountedRef = useRef(false);
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      mediaRecorderRef.current = mediaRecorder;
-      chunksRef.current = [];
-
-      mediaRecorder.ondataavailable = (e) => {
-        if (e.data.size > 0) chunksRef.current.push(e.data);
-      };
-
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(chunksRef.current, { type: 'audio/webm' });
-        const url = URL.createObjectURL(blob);
-        setAudioUrl(url);
+  useEffect(() => {
+    mountedRef.current = true;
+    const session = new AudioRecordingSession({
+      onStarted: () => {
+        setIsRecording(true);
+        setAudioUrl(null);
+        setRecordingBlob(null);
+        setHasRecorded(false);
+      },
+      onStopped: () => setIsRecording(false),
+      onComplete: blob => {
+        setAudioUrl(URL.createObjectURL(blob));
         setRecordingBlob(blob);
         setHasRecorded(true);
-        stream.getTracks().forEach((t) => t.stop());
-      };
+      },
+      onError: setSizeError,
+    });
+    sessionRef.current = session;
+    return () => {
+      mountedRef.current = false;
+      sessionRef.current = null;
+      session.dispose();
+    };
+  }, []);
 
-      mediaRecorder.start();
-      setIsRecording(true);
-      setAudioUrl(null);
-      setHasRecorded(false);
-    } catch (err) {
-      console.error('Microphone access denied:', err);
+  useEffect(() => {
+    return () => {
+      if (audioUrl) URL.revokeObjectURL(audioUrl);
+    };
+  }, [audioUrl]);
+
+  const startRecording = async () => {
+    if (startingRef.current || isRecording || isEvaluating) return;
+    startingRef.current = true;
+    setIsStarting(true);
+    setSizeError(null);
+    try {
+      await sessionRef.current?.start();
+    } finally {
+      startingRef.current = false;
+      if (mountedRef.current) setIsStarting(false);
     }
   };
 
   const stopRecording = () => {
-    if (mediaRecorderRef.current && isRecording) {
-      mediaRecorderRef.current.stop();
-      setIsRecording(false);
-    }
+    sessionRef.current?.stop();
   };
 
   const handleReset = () => {
     setAudioUrl(null);
     setRecordingBlob(null);
     setHasRecorded(false);
+    setSizeError(null);
   };
-
-  const [sizeError, setSizeError] = useState<string | null>(null);
 
   const handleSubmit = () => {
     if (!recordingBlob) return;
@@ -72,7 +87,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplet
     <div className="flex flex-col items-center justify-center p-6 bg-white dark:bg-[#1E1E1E] rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
       <div className="mb-4 text-center">
         <h3 className="text-base font-semibold text-slate-800 dark:text-slate-200">
-          {isRecording ? 'Listening...' : hasRecorded ? 'Ready to Submit' : 'Your Turn'}
+          {isStarting ? 'Starting...' : isRecording ? 'Listening...' : hasRecorded ? 'Ready to Submit' : 'Your Turn'}
         </h3>
         <p className="text-sm text-slate-500">
           {isRecording
@@ -87,8 +102,10 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplet
         {!isRecording && !hasRecorded && (
           <button
             onClick={startRecording}
+            disabled={isStarting || isEvaluating}
+            aria-busy={isStarting}
             aria-label="Start recording"
-            className="group relative flex h-20 w-20 items-center justify-center rounded-full bg-brand-600 text-white shadow-xl transition-all hover:scale-105 hover:shadow-brand-400/40"
+            className="group relative flex h-20 w-20 items-center justify-center rounded-full bg-brand-600 text-white shadow-xl transition-all enabled:hover:scale-105 enabled:hover:shadow-brand-400/40 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <Mic className="h-8 w-8" />
           </button>
@@ -132,7 +149,7 @@ export const AudioRecorder: React.FC<AudioRecorderProps> = ({ onRecordingComplet
       </div>
 
       {sizeError && (
-        <p className="mt-3 text-xs text-red-500 text-center">{sizeError}</p>
+        <p role="alert" className="mt-3 text-xs text-red-500 text-center">{sizeError}</p>
       )}
 
       {audioUrl && (

@@ -20,26 +20,31 @@ export const OmniReader: React.FC<OmniReaderProps> = ({ onRead, onNeedApiKey }) 
   const [noApiKey, setNoApiKey] = useState(false);
   const [playbackTime, setPlaybackTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [error, setError] = useState('');
 
   const sourceNodeRef = useRef<AudioBufferSourceNode | null>(null);
   const audioBufferRef = useRef<AudioBuffer | null>(null);
   const startTimeRef = useRef<number>(0);
   const pauseTimeRef = useRef<number>(0);
   const rafRef = useRef<number | null>(null);
+  const generationRef = useRef(0);
+  const playbackRef = useRef(0);
 
   const getAudioContext = () => getSharedPlaybackAudioContext(24000);
 
   const handleStop = useCallback(() => {
+    playbackRef.current++;
     if (sourceNodeRef.current) {
+      sourceNodeRef.current.onended = null;
       try {
         sourceNodeRef.current.stop();
-        sourceNodeRef.current.disconnect();
       } catch {
-        // ignore
+        // An already-ended source may reject stop; still disconnect it below.
       }
+      sourceNodeRef.current.disconnect();
       sourceNodeRef.current = null;
     }
-    if (rafRef.current) {
+    if (rafRef.current !== null) {
       cancelAnimationFrame(rafRef.current);
       rafRef.current = null;
     }
@@ -48,6 +53,7 @@ export const OmniReader: React.FC<OmniReaderProps> = ({ onRead, onNeedApiKey }) 
 
   useEffect(() => {
     return () => {
+      generationRef.current++;
       handleStop();
       audioBufferRef.current = null;
       pauseTimeRef.current = 0;
@@ -55,42 +61,53 @@ export const OmniReader: React.FC<OmniReaderProps> = ({ onRead, onNeedApiKey }) 
   }, [handleStop]);
 
   const handlePlay = async () => {
-    const ctx = getAudioContext();
-    if (ctx.state === 'suspended') await ctx.resume();
-    if (!audioBufferRef.current) return;
+    const buffer = audioBufferRef.current;
+    if (!buffer || sourceNodeRef.current) return false;
+    const playback = ++playbackRef.current;
+    setError('');
+    try {
+      const ctx = getAudioContext();
+      if (ctx.state === 'suspended') await ctx.resume();
+      if (playback !== playbackRef.current) return false;
 
-    const source = ctx.createBufferSource();
-    source.buffer = audioBufferRef.current;
-    source.connect(ctx.destination);
-    sourceNodeRef.current = source;
+      const source = ctx.createBufferSource();
+      sourceNodeRef.current = source;
+      source.buffer = buffer;
+      source.connect(ctx.destination);
 
-    source.onended = () => {
-      source.disconnect();
-      const elapsed = ctx.currentTime - startTimeRef.current;
-      if (elapsed >= (audioBufferRef.current?.duration || 0)) {
+      source.onended = () => {
+        if (sourceNodeRef.current !== source) return;
+        source.disconnect();
+        sourceNodeRef.current = null;
         setIsPlaying(false);
         setPlaybackTime(0);
         pauseTimeRef.current = 0;
-        if (rafRef.current) {
+        if (rafRef.current !== null) {
           cancelAnimationFrame(rafRef.current);
           rafRef.current = null;
         }
-      }
-    };
+      };
 
-    const offset = pauseTimeRef.current % (audioBufferRef.current.duration || 1);
-    startTimeRef.current = ctx.currentTime - offset;
-    source.start(0, offset);
-    setIsPlaying(true);
+      const offset = pauseTimeRef.current % (buffer.duration || 1);
+      startTimeRef.current = ctx.currentTime - offset;
+      source.start(0, offset);
+      setIsPlaying(true);
 
-    const updateProgress = () => {
-      const elapsed = ctx.currentTime - startTimeRef.current;
-      setPlaybackTime(Math.min(elapsed, audioBufferRef.current?.duration || 0));
-      if (elapsed < (audioBufferRef.current?.duration || 0)) {
-        rafRef.current = requestAnimationFrame(updateProgress);
-      }
-    };
-    rafRef.current = requestAnimationFrame(updateProgress);
+      const updateProgress = () => {
+        const elapsed = ctx.currentTime - startTimeRef.current;
+        setPlaybackTime(Math.min(elapsed, buffer.duration));
+        if (elapsed < buffer.duration) {
+          rafRef.current = requestAnimationFrame(updateProgress);
+        }
+      };
+      rafRef.current = requestAnimationFrame(updateProgress);
+      return true;
+    } catch {
+      if (playback !== playbackRef.current) return false;
+      handleStop();
+      setError('Could not play audio. Please try again.');
+      return false;
+    }
   };
 
   const handlePause = () => {
@@ -101,33 +118,37 @@ export const OmniReader: React.FC<OmniReaderProps> = ({ onRead, onNeedApiKey }) 
 
   const handleGenerateAndPlay = async () => {
     if (!inputText.trim()) return;
+    const generation = ++generationRef.current;
     setIsLoading(true);
+    setError('');
     setMode(ReaderMode.PLAYER);
     handleStop();
+    audioBufferRef.current = null;
     pauseTimeRef.current = 0;
     setPlaybackTime(0);
     setDuration(0);
 
     try {
       const base64Audio = await generateSpeech(inputText, currentVoice);
-      if (base64Audio) {
-        const ctx = getAudioContext();
-        const rawBytes = decodeBase64(base64Audio);
-        const buffer = await decodeAudioData(rawBytes, ctx, 24000, 1);
-        audioBufferRef.current = buffer;
-        setDuration(buffer.duration);
-        setIsLoading(false);
-        if (onRead) onRead();
-        handlePlay();
-      }
+      if (generation !== generationRef.current) return;
+      if (!base64Audio) throw new Error('EMPTY_AUDIO');
+      const ctx = getAudioContext();
+      const rawBytes = decodeBase64(base64Audio);
+      const buffer = await decodeAudioData(rawBytes, ctx, 24000, 1);
+      if (generation !== generationRef.current) return;
+      audioBufferRef.current = buffer;
+      setDuration(buffer.duration);
+      if (await handlePlay() && generation === generationRef.current) onRead?.();
     } catch (err) {
+      if (generation !== generationRef.current) return;
       if (err instanceof Error && err.message === 'NO_API_KEY') {
         setNoApiKey(true);
       } else {
-        console.error('Playback failed', err);
+        setError('Could not generate audio. Please try again.');
       }
-      setIsLoading(false);
       setMode(ReaderMode.INPUT);
+    } finally {
+      if (generation === generationRef.current) setIsLoading(false);
     }
   };
 
@@ -168,10 +189,12 @@ export const OmniReader: React.FC<OmniReaderProps> = ({ onRead, onNeedApiKey }) 
   if (mode === ReaderMode.INPUT) {
     return (
       <div className="p-4 md:p-6 max-w-2xl mx-auto space-y-4">
+        {error && <p role="alert" className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl px-4 py-2.5">{error}</p>}
         <div>
-          <label className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Source Content</label>
+          <label htmlFor="omnireader-source" className="block text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider mb-2">Source Content</label>
           <div className="bg-white dark:bg-surface-dark-card rounded-2xl border border-slate-100 dark:border-slate-700 shadow-sm p-4">
             <textarea
+              id="omnireader-source"
               className="w-full h-48 resize-none outline-none text-base leading-relaxed text-slate-800 dark:text-slate-100 placeholder-slate-300 dark:placeholder-slate-500 bg-transparent"
               placeholder="Paste any Chinese article, text, or passage here to listen..."
               value={inputText}
@@ -234,7 +257,10 @@ export const OmniReader: React.FC<OmniReaderProps> = ({ onRead, onNeedApiKey }) 
       <div className="px-6 pt-6 flex items-center justify-between">
         <button
           onClick={() => {
+            generationRef.current++;
             handleStop();
+            audioBufferRef.current = null;
+            setIsLoading(false);
             setMode(ReaderMode.INPUT);
           }}
           className="flex items-center gap-1 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white transition-colors"
@@ -246,6 +272,7 @@ export const OmniReader: React.FC<OmniReaderProps> = ({ onRead, onNeedApiKey }) 
         <div className="w-16" />
       </div>
 
+      {error && <p role="alert" className="text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl px-4 py-2.5">{error}</p>}
       <div className="flex-1 flex flex-col items-center justify-center p-8">
         <div
           className={`w-56 h-56 rounded-3xl shadow-2xl bg-gradient-to-br from-brand-400 to-brand-800 flex items-center justify-center mb-8 transform transition-transform duration-700 ${
@@ -278,8 +305,9 @@ export const OmniReader: React.FC<OmniReaderProps> = ({ onRead, onNeedApiKey }) 
 
         <div className="flex items-center justify-center gap-12">
           <button
-            onClick={isPlaying ? handlePause : handlePlay}
+            onClick={isPlaying ? handlePause : () => { void handlePlay(); }}
             disabled={isLoading}
+            aria-label={isLoading ? 'Generating audio' : isPlaying ? 'Pause audio' : 'Play audio'}
             className="w-20 h-20 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-full flex items-center justify-center shadow-xl shadow-slate-400/30 dark:shadow-none hover:scale-105 active:scale-95 transition-all disabled:opacity-50"
           >
             {isLoading ? (

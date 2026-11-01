@@ -1,5 +1,6 @@
 import { AppSettings, AIProvider } from '../types';
 import { SETTINGS_KEY, DEFAULT_MODELS } from '../config/constants';
+import { Storage } from '../services/storage';
 
 const DEFAULT_SETTINGS: AppSettings = {
   provider: 'gemini',
@@ -16,7 +17,7 @@ const DEFAULT_SETTINGS: AppSettings = {
 export const SettingsStore = {
   load(): AppSettings {
     try {
-      const saved = localStorage.getItem(SETTINGS_KEY);
+      const saved = Storage.getSync(SETTINGS_KEY);
       return saved ? { ...DEFAULT_SETTINGS, ...JSON.parse(saved) } : { ...DEFAULT_SETTINGS };
     } catch {
       return { ...DEFAULT_SETTINGS };
@@ -24,7 +25,7 @@ export const SettingsStore = {
   },
 
   save(settings: AppSettings): void {
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(settings));
+    Storage.setFireAndForget(SETTINGS_KEY, JSON.stringify(settings));
   },
 
   update(partial: Partial<AppSettings>): AppSettings {

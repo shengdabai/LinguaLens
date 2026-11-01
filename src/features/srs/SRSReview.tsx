@@ -9,17 +9,19 @@ interface SRSReviewProps {
 }
 
 export const SRSReview: React.FC<SRSReviewProps> = ({ cards, onGrade }) => {
+  // Grading removes due cards in the parent. Keep this session's order stable.
+  const [sessionCards, setSessionCards] = useState(() => cards.slice());
   const [currentIndex, setCurrentIndex] = useState(0);
   const [revealed, setRevealed] = useState(false);
   const [sessionDone, setSessionDone] = useState(false);
 
-  const current = cards[currentIndex];
+  const current = sessionCards[currentIndex];
 
   const handleGrade = (grade: 'again' | 'hard' | 'good' | 'easy') => {
     if (!current) return;
     onGrade(current.id, grade);
     const next = currentIndex + 1;
-    if (next >= cards.length) {
+    if (next >= sessionCards.length) {
       setSessionDone(true);
     } else {
       setCurrentIndex(next);
@@ -28,12 +30,13 @@ export const SRSReview: React.FC<SRSReviewProps> = ({ cards, onGrade }) => {
   };
 
   const handleRestart = () => {
+    setSessionCards(cards.slice());
     setCurrentIndex(0);
     setRevealed(false);
     setSessionDone(false);
   };
 
-  if (cards.length === 0) {
+  if (sessionCards.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center h-64 p-8 text-center">
         <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mb-4">
@@ -55,7 +58,7 @@ export const SRSReview: React.FC<SRSReviewProps> = ({ cards, onGrade }) => {
         </div>
         <h3 className="text-xl font-bold text-slate-800 dark:text-slate-200 mb-2">Session Complete!</h3>
         <p className="text-slate-500 text-sm mb-5">
-          Reviewed {cards.length} card{cards.length !== 1 ? 's' : ''}. Great work!
+          Reviewed {sessionCards.length} card{sessionCards.length !== 1 ? 's' : ''}. Great work!
         </p>
         <button
           onClick={handleRestart}
@@ -67,14 +70,14 @@ export const SRSReview: React.FC<SRSReviewProps> = ({ cards, onGrade }) => {
     );
   }
 
-  const progress = currentIndex / cards.length;
+  const progress = currentIndex / sessionCards.length;
 
   return (
     <div className="p-4 md:p-6 max-w-lg mx-auto space-y-4">
       {/* Progress */}
       <div className="flex items-center justify-between text-xs text-slate-500 mb-1">
         <span className="font-medium">
-          Card {currentIndex + 1} of {cards.length}
+          Card {currentIndex + 1} of {sessionCards.length}
         </span>
         <span className="font-medium">{Math.round(progress * 100)}%</span>
       </div>

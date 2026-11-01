@@ -1,0 +1,40 @@
+require_relative '../../node_modules/@capacitor/ios/scripts/pods_helpers'
+
+platform :ios, '16.0'
+use_frameworks!
+
+# workaround to avoid Xcode caching of Pods that requires
+# Product -> Clean Build Folder after new Cordova plugins installed
+# Requires CocoaPods 1.6 or newer
+install! 'cocoapods', :disable_input_output_paths => true
+
+def capacitor_pods
+  pod 'Capacitor', :path => '../../node_modules/@capacitor/ios'
+  pod 'CapacitorCordova', :path => '../../node_modules/@capacitor/ios'
+  pod 'CapacitorApp', :path => '../../node_modules/@capacitor/app'
+  pod 'CapacitorCamera', :path => '../../node_modules/@capacitor/camera'
+  pod 'CapacitorHaptics', :path => '../../node_modules/@capacitor/haptics'
+  pod 'CapacitorPreferences', :path => '../../node_modules/@capacitor/preferences'
+  pod 'CapacitorStatusBar', :path => '../../node_modules/@capacitor/status-bar'
+end
+
+target 'App' do
+  capacitor_pods
+  # Add your Pods here
+end
+
+post_install do |installer|
+  assertDeploymentTarget(installer)
+  # iCloud Drive on Desktop adds com.apple.fileprovider.fpfs#P + com.apple.FinderInfo
+  # to build outputs, which causes codesign to fail with
+  # "resource fork, Finder information, or similar detritus not allowed".
+  # Insert a pre-CodeSign Run Script that strips xattrs from the built product.
+  installer.pods_project.targets.each do |target|
+    next unless target.respond_to?(:product_type) && target.product_type == 'com.apple.product-type.framework'
+    phase = target.new_shell_script_build_phase('Strip xattrs (Desktop+iCloud workaround)')
+    phase.shell_script = 'if [ -e "${TARGET_BUILD_DIR}/${WRAPPER_NAME}" ]; then xattr -cr "${TARGET_BUILD_DIR}/${WRAPPER_NAME}"; fi'
+    phase.always_out_of_date = '1'
+    # Move it before any code-signing phase
+    target.build_phases.move(phase, target.build_phases.length - 2) if target.build_phases.length > 2
+  end
+end

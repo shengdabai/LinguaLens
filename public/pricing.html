@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LinguaLens 定价方案 — See Chinese clearly. Speak it naturally.</title>
+    <meta name="description" content="LinguaLens 目前提供免费的自带 API Key 模式，全部工具可用；Pro 与 Enterprise 方案尚未开售。">
+    <!-- No canonical until LinguaLens has its own public domain (lingualens.zturnsgo.com does not exist; lingualens.app is another product). -->
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://zturnsgo.com/apps#lingualens">
+    <meta property="og:title" content="LinguaLens 定价方案 — 13个AI中文学习工具">
+    <meta property="og:description" content="自带 API Key 即可免费使用全部工具；付费方案尚未开售。">
+
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Noto Sans SC', sans-serif;
+            background: #0a0a0a;
+            color: #e5e5e5;
+            line-height: 1.6;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+        nav { padding: 20px 0; border-bottom: 1px solid #1a1a1a; }
+        nav .container { display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 1.25rem; font-weight: 700; color: #fff; }
+        .logo span { color: #f59e0b; }
+        .nav-links { display: flex; gap: 24px; }
+        .nav-links a { color: #a3a3a3; text-decoration: none; font-size: 0.9rem; }
+        .nav-links a:hover { color: #fff; }
+
+        .hero { padding: 80px 0 40px; text-align: center; }
+        .hero h1 {
+            font-size: 2.5rem; font-weight: 800; margin-bottom: 16px;
+            background: linear-gradient(135deg, #f59e0b, #ef4444);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .hero p { color: #a3a3a3; font-size: 1.1rem; max-width: 500px; margin: 0 auto; }
+
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            padding: 60px 0 100px;
+        }
+        .pricing-card {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 16px;
+            padding: 36px;
+            position: relative;
+            transition: border-color 0.2s;
+        }
+        .pricing-card:hover { border-color: #f59e0b; }
+        .pricing-card.featured {
+            border-color: #ef4444;
+            box-shadow: 0 0 60px rgba(239, 68, 68, 0.15);
+        }
+        .badge {
+            position: absolute;
+            top: -12px; left: 50%; transform: translateX(-50%);
+            background: #ef4444;
+            color: #fff;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        .pricing-card h3 { font-size: 1.3rem; margin-bottom: 8px; color: #fff; }
+        .pricing-card .price {
+            font-size: 3rem; font-weight: 800; color: #fff; margin: 20px 0;
+        }
+        .pricing-card .price span { font-size: 1rem; font-weight: 400; color: #a3a3a3; }
+        .pricing-card ul { list-style: none; margin: 24px 0; }
+        .pricing-card li { padding: 10px 0; color: #a3a3a3; font-size: 0.95rem; border-bottom: 1px solid #1a1a1a; }
+        .pricing-card li:last-child { border-bottom: none; }
+        .pricing-card li::before { content: '✓ '; color: #34d399; font-weight: 700; }
+
+        .btn {
+            display: block; text-align: center; padding: 14px;
+            border-radius: 10px; font-size: 1rem; font-weight: 600;
+            text-decoration: none; transition: all 0.2s;
+        }
+        .btn-primary { background: #ef4444; color: #fff; }
+        .btn-primary:hover { background: #dc2626; transform: translateY(-2px); }
+        .btn-secondary { background: #1a1a1a; color: #e5e5e5; border: 1px solid #333; }
+        .btn-secondary:hover { border-color: #f59e0b; }
+
+        footer { padding: 40px 0; border-top: 1px solid #1a1a1a; text-align: center; color: #6b7280; font-size: 0.85rem; }
+        footer a { color: #f59e0b; text-decoration: none; }
+
+        @media (max-width: 640px) {
+            .hero h1 { font-size: 1.75rem; }
+            .pricing-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="container">
+            <div class="logo">Lingua<span>Lens</span></div>
+            <div class="nav-links">
+                <a href="https://zturnsgo.com/apps#lingualens">介绍</a>
+                <a href="https://github.com/shengdabai/lingualens">GitHub</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="container">
+            <h1>选择你的学习方案</h1>
+            <p>自带 API Key 即可使用全部工具。无需自备 Key 的付费方案尚未开售。</p>
+        </div>
+    </section>
+
+    <div class="container">
+        <div class="pricing-grid">
+            <div class="pricing-card">
+                <h3>Free</h3>
+                <div class="price">¥0</div>
+                <ul>
+                    <li>全部中文学习工具</li>
+                    <li>自带 API Key (BYOK)</li>
+                    <li>LinguaLens 不设每日次数限制（AI 服务商自己的限额和费用照常适用）</li>
+                </ul>
+                <a href="https://zturnsgo.com/apps#lingualens" class="btn btn-secondary">了解 LinguaLens</a>
+            </div>
+
+            <div class="pricing-card featured">
+                <div class="badge">最受欢迎</div>
+                <h3>Pro</h3>
+                <div class="price">未开售</div>
+                <ul>
+                    <li>全部 13 个 AI 工具</li>
+                    <li>官方 AI 代理（无需自备 Key）</li>
+                    <li>iOS App 完整功能</li>
+                    <li>发音评估 + 实时对话</li>
+                    <li>沉浸阅读 + 语法分析</li>
+                    <li>优先技术支持</li>
+                </ul>
+                <span class="btn btn-primary" aria-disabled="true" style="opacity:.6;cursor:not-allowed">即将开放</span>
+            </div>
+
+            <div class="pricing-card">
+                <h3>Enterprise</h3>
+                <div class="price">定制</div>
+                <ul>
+                    <li>包含所有 Pro 功能</li>
+                    <li>教师后台管理</li>
+                    <li>Site License（多学生授权）</li>
+                    <li>学习进度追踪报表</li>
+                    <li>API 接入</li>
+                    <li>专属客户成功经理</li>
+                </ul>
+                <span class="btn btn-secondary" aria-disabled="true" style="opacity:.6;cursor:not-allowed">即将开放</span>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <p>Built with ❤️ by <a href="https://zturnsgo.com">Z Turns Go</a></p>
+            <p style="margin-top:8px">MIT License · <a href="https://github.com/shengdabai/lingualens">GitHub</a></p>
+        </div>
+    </footer>
+</body>
+</html>

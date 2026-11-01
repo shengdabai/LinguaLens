@@ -70,13 +70,24 @@ export async function decodeAudioData(
   sampleRate = 24000,
   numChannels = 1,
 ): Promise<AudioBuffer> {
-  const dataInt16 = new Int16Array(data.buffer);
-  const frameCount = dataInt16.length / numChannels;
+  if (!Number.isInteger(numChannels) || numChannels < 1) {
+    throw new RangeError('Audio channel count must be a positive integer.');
+  }
+  if (!Number.isFinite(sampleRate) || sampleRate <= 0) {
+    throw new RangeError('Audio sample rate must be positive and finite.');
+  }
+  if (data.byteLength === 0 || data.byteLength % (2 * numChannels) !== 0) {
+    throw new RangeError('PCM data must contain complete 16-bit audio frames.');
+  }
+  // Respect Uint8Array slices and PCM's little-endian byte order. A DataView also
+  // supports odd byte offsets, which cannot be passed to an Int16Array view.
+  const samples = new DataView(data.buffer, data.byteOffset, data.byteLength);
+  const frameCount = data.byteLength / (2 * numChannels);
   const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);
   for (let channel = 0; channel < numChannels; channel++) {
     const channelData = buffer.getChannelData(channel);
     for (let i = 0; i < frameCount; i++) {
-      channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
+      channelData[i] = samples.getInt16((i * numChannels + channel) * 2, true) / 32768.0;
     }
   }
   return buffer;
