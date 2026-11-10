@@ -13,7 +13,7 @@ Generated: 2026-05-08 — Phase A2 of iOS migration.
 
 ## Read path
 `SettingsStore.getApiKeyForProvider(provider)` → `src/store/settingsStore.ts:41-50`
-Falls back to `import.meta.env.VITE_GEMINI_API_KEY` for Gemini only when localStorage value is empty (dev convenience).
+Falls back to `import.meta.env.VITE_GEMINI_API_KEY` for Gemini only in development when the stored value is empty. Production builds remove this fallback and require the user's stored key.
 
 ## Write path
 Settings page (`src/features/settings/SettingsPage.tsx`) → `SettingsStore.update({...})` → `localStorage.setItem`.
